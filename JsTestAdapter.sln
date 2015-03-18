@@ -14,6 +14,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{C1BE26BA
 		Tools\NuGet.exe = Tools\NuGet.exe
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTestAdapter", "TestTestAdapter\TestTestAdapter.csproj", "{FFD1ABD2-C09C-4B23-BD9C-AA4D19906740}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{0A5E2EF2-B590-48D0-A782-397F78E5E367}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +41,10 @@ Global
 		{6109A014-AD9B-4EC0-AEBD-816FAECDA267}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6109A014-AD9B-4EC0-AEBD-816FAECDA267}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6109A014-AD9B-4EC0-AEBD-816FAECDA267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFD1ABD2-C09C-4B23-BD9C-AA4D19906740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFD1ABD2-C09C-4B23-BD9C-AA4D19906740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFD1ABD2-C09C-4B23-BD9C-AA4D19906740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFD1ABD2-C09C-4B23-BD9C-AA4D19906740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

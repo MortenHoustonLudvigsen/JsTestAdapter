@@ -67,9 +67,18 @@
       <Private>True</Private>
       <HintPath>..\packages\JsTestAdapter.1.0.0.0\lib\net45\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
+      <HintPath>..\packages\JsTestAdapter.1.0.0.0\lib\net45\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestWindow.Interfaces">
+      <HintPath>..\packages\JsTestAdapter.1.0.0.0\lib\net45\Microsoft.VisualStudio.TestWindow.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NpmProxy">
+      <HintPath>..\packages\JsTestAdapter.1.0.0.0\lib\net45\NpmProxy.dll</HintPath>
     </Reference>
     <Reference Include="ProcessRunner">
       <HintPath>..\packages\ProcessRunner.1.0.7\lib\net40\ProcessRunner.dll</HintPath>
