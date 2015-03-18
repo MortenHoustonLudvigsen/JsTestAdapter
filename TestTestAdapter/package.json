@@ -1,0 +1,11 @@
+{
+  "name": "TestTestAdapter",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "JsTestAdapter": "0.0.0"
+  },
+  "devDependencies": {
+    "grunt-npm-install": "^0.2.0"
+  }
+}

@@ -140,7 +140,6 @@
     <Compile Include="Logging\TestLogLevel.cs" />
     <Compile Include="Logging\TestMessageTestLogger.cs" />
     <Compile Include="Logging\TestServerLogger.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestAdapter\RunSettingsExtensions.cs" />
     <Compile Include="TestAdapter\TestAdapterInfo.cs" />
     <Compile Include="TestAdapter\TestRunner.cs" />
@@ -185,12 +184,6 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NpmProxy\NpmProxy.csproj">
-      <Project>{65f8ef17-76cf-4f2f-9d3e-55cc1c95d065}</Project>
-      <Name>NpmProxy</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />
@@ -221,6 +214,7 @@
     <None Include="TestServer\TextFile.js">
       <DependentUpon>TextFile.ts</DependentUpon>
     </None>
+    <None Include="Tools\Install.ps1" />
     <None Include="tsd.json" />
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +246,12 @@
     <Content Include="JsTestAdapter.nuspec">
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NpmProxy\NpmProxy.csproj">
+      <Project>{65f8ef17-76cf-4f2f-9d3e-55cc1c95d065}</Project>
+      <Name>NpmProxy</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>
