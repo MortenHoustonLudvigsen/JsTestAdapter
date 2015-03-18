@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://raw.githubusercontent.com/MortenHoustonLudvigsen/JsTestAdapter/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/MortenHoustonLudvigsen/JsTestAdapter</projectUrl>
+    <!--<iconUrl></iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2015</copyright>
+    <tags></tags>
+  </metadata>
+  <files>
+    <file src="Dlls\*.*" target="lib\net45" />
+    <file src="bin\NpmProxy.*" target="lib\net45" />
+    <file src="TestServer\*.ts" target="content\TestServer" />
+  </files>
+</package>
