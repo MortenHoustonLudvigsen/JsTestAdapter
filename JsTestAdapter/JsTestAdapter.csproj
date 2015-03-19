@@ -106,9 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Vsix\Content_Types.xml" />
-    <Content Include="Grunt\Config.js">
-      <DependentUpon>Index.ts</DependentUpon>
-    </Content>
     <Content Include="Grunt\GetContentTypes.js">
       <DependentUpon>GetContentTypes.ts</DependentUpon>
     </Content>
@@ -179,7 +176,7 @@
     <Compile Include="TestServerClient\TestServer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Grunt\Config.js.map">
+    <Content Include="Grunt\Index.js.map">
       <DependentUpon>Index.ts</DependentUpon>
     </Content>
     <None Include="TestServer\FreePort.js">
@@ -193,7 +190,9 @@
     </None>
     <Content Include="Content\Vsix\source.extension.vsixmanifest" />
     <Content Include="gruntfile.js" />
-    <Content Include="TestServer\package.json" />
+    <Content Include="Grunt\Index.js">
+      <DependentUpon>Index.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\SourceUtils.js">
       <DependentUpon>SourceUtils.ts</DependentUpon>
     </None>
@@ -216,6 +215,7 @@
     <TypeScriptCompile Include="TestServer\Specs.ts" />
     <TypeScriptCompile Include="TestServer\TestServer.ts" />
     <TypeScriptCompile Include="TestServer\TextFile.ts" />
+    <TypeScriptCompile Include="typings\extend\extend.d.ts" />
     <TypeScriptCompile Include="typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\q\Q.d.ts" />

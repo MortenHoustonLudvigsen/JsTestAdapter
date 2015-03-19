@@ -1,6 +1,7 @@
 ﻿param($installPath, $toolsPath, $package, $project)
 
 $projectDir = [System.IO.Path]::GetDirectoryName($project.FullName)
+$projectName = $project.Name
 $toolsDir = Join-Path $installPath "Tools"
 
 function GetRelativePath($base, $path)
@@ -12,6 +13,18 @@ function GetRelativePath($base, $path)
     return $result.Replace("\", "/")
 }
 
+function CreateTextFile($path, $projectItems, $text)
+{
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+    [System.IO.File]::WriteAllLines($path, $text, $Utf8NoBomEncoding)
+    return $projectItems.AddFromFile($path)
+}
+
+function CopyFile($from, $to, $projectItems)
+{
+    Copy-Item $from $to
+    return $projectItems.AddFromFile($to)
+}
 
 ##########################################################
 # Do not copy Visual Studio assemblies locally
@@ -79,13 +92,81 @@ $project.ProjectItems.AddFromDirectory([System.IO.Path]::Combine($projectDir, "t
 Pop-Location
 
 ##########################################################
-# Install npm packages in TestServer
+# Install npm packages
 
-Write-Host Install npm packages in TestServer
+$defaultPackageFile = @"
+{
+  "name": "$projectName",
+  "version": "0.0.1",
+  "private": true
+}
+"@
 
-Push-Location $projectDir\TestServer
-npm install
+Write-Host Install npm packages
+
+$packageItem = $project.ProjectItems | Where-Object { $_.Name -eq "package.json" } | Select-Object -First 1
+
+if (!$packageItem)
+{
+    $packageFile = Join-Path $projectDir "package.json"
+    CreateTextFile $packageFile $project.ProjectItems $defaultPackageFile
+}
+
+Push-Location $projectDir
+$packageFile = Join-Path $toolsDir "package.json"
+$package = Get-Content -Raw -Path $packageFile | ConvertFrom-Json
+
+$package.dependencies.psobject.properties | foreach {
+    $module = $_.Name
+    $version = $_.Value
+    $command = "npm install $module --save"
+    Write-Host $command
+    Invoke-Expression $command
+}
+
+$package.devDependencies.psobject.properties | foreach {
+    $module = $_.Name
+    $version = $_.Value
+    $command = "npm install $module --save-dev"
+    Write-Host $command
+    Invoke-Expression $command
+}
+
 Pop-Location
+
+##########################################################
+# Create Gruntfile.ts
+
+$defaultGruntfileTs = @"
+import jsTestAdapter = require('./Grunt/Index');
+
+function config(grunt) {
+    grunt.initConfig({
+    });
+
+    jsTestAdapter.config(grunt, {
+        name: '$projectName',
+        output: 'bin'
+    });
+
+    grunt.registerTask('default', []);
+}
+
+export = config;
+"@
+
+$gruntfileItem = $project.ProjectItems | Where-Object { $_.Name -eq "Gruntfile.ts" -or $_.Name -eq "Gruntfile.js" } | Select-Object -First 1
+if (!$gruntfileItem)
+{
+    $gruntfileTs = Join-Path $projectDir "Gruntfile.ts"
+    $gruntfileJs = Join-Path $projectDir "Gruntfile.js"
+    $gruntfileJsMap = Join-Path $projectDir "Gruntfile.js.map"
+    $gruntFileItem = CreateTextFile $gruntfileTs $project.ProjectItems $defaultGruntfileTs
+
+    CreateTextFile $gruntfileJs $gruntFileItem.ProjectItems ""
+    CreateTextFile $gruntfileJsMap $gruntFileItem.ProjectItems ""
+}
+
 
 ##########################################################
 # Done

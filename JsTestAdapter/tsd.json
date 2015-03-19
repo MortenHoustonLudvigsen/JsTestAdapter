@@ -16,6 +16,9 @@
     },
     "q/Q.d.ts": {
       "commit": "3882d337bb0808cde9fe4c08012508a48c135482"
+    },
+    "extend/extend.d.ts": {
+      "commit": "95ce1d9e8212be19d36aa8ccecb48303cc5c87f9"
     }
   }
 }

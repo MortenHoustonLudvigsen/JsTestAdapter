@@ -1,7 +1,17 @@
 var getNodeModules = require('./GetNodeModules');
 var getContentTypes = require('./GetContentTypes');
+var extend = require('extend');
+var flatten = require('flatten-packages');
+var defaultOptions = {
+    packagePath: 'package.json',
+    serverPath: '.',
+    build: 'build',
+    dist: 'dist',
+    output: 'bin',
+};
 function config(grunt, options) {
-    options.packagePath = options.packagePath || 'package.json', options.serverPath = options.serverPath || 'TestServer', options.build = options.build || 'build', options.dist = options.dist || 'dist', options.output = options.output || 'bin/Debug', grunt.loadNpmTasks('grunt-contrib-clean');
+    options = extend({}, defaultOptions, options);
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-xmlpoke');
@@ -24,7 +34,7 @@ function config(grunt, options) {
             }
         },
         xmlpoke: {
-            JsTestAdapter: {
+            'JsTestAdapter-vsix': {
                 options: {
                     replacements: [
                         {
@@ -63,6 +73,27 @@ function config(grunt, options) {
             }
         }
     });
+    grunt.registerTask('JsTestAdapter-flatten-packages', function () {
+        var done = this.async();
+        flatten(options.build, {}, function (err, res) {
+            if (err) {
+                grunt.log.error(err);
+                done(false);
+            }
+            if (res) {
+                grunt.log.writeln(res);
+                done();
+            }
+        });
+    });
+    grunt.registerTask('JsTestAdapter', [
+        'clean:JsTestAdapter',
+        'copy:JsTestAdapter',
+        'JsTestAdapter-flatten-packages',
+        'xmlpoke:JsTestAdapter-vsix',
+        'xmlpoke:JsTestAdapter-contentTypes',
+        'compress:JsTestAdapter'
+    ]);
 }
 exports.config = config;
 //# sourceMappingURL=Index.js.map

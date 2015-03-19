@@ -17,11 +17,13 @@
   </metadata>
   <files>
     <file src="Dlls\*.*" target="lib\net45" />
+    <file src="bin\JsTestAdapter.*" target="lib\net45" />
     <file src="bin\NpmProxy.*" target="lib\net45" />
     <file src="Content\**" target="Content" />
     <file src="TestServer\**" target="Content\TestServer" exclude="TestServer\node_modules\**" />
     <file src="Grunt\**" target="Content\Grunt" exclude="Grunt\node_modules\**" />
     <file src="Tools\**" target="Tools" />
     <file src="tsd.json" target="Tools" />
+    <file src="package.json" target="Tools" />
   </files>
 </package>

@@ -1,11 +1,15 @@
-var jsTestAdapter = require('./Grunt/Index');
+import jsTestAdapter = require('./Grunt/Index');
+
 function config(grunt) {
-    grunt.initConfig({});
+    grunt.initConfig({
+    });
+
     jsTestAdapter.config(grunt, {
         name: 'TestTestAdapter',
         output: 'bin'
     });
+
     grunt.registerTask('default', []);
 }
-module.exports = config;
-//# sourceMappingURL=Gruntfile.js.map
+
+export = config;
