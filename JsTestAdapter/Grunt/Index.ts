@@ -51,7 +51,7 @@ export function config(grunt: any, options: Options): void {
                     // Binaries
                     { expand: true, cwd: options.output, src: ['**', '!*.xml'], dest: options.build },
                     // LICENSE
-                    { expand: true, cwd: options.serverPath, src: ['LICENSE'], dest: options.build }
+                    { expand: true, cwd: path.join(options.serverPath, '..'), src: ['LICENSE'], dest: options.build }
                 ]
             }
         },

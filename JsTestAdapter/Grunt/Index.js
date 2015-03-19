@@ -1,3 +1,4 @@
+var path = require('path');
 var getNodeModules = require('./GetNodeModules');
 var getContentTypes = require('./GetContentTypes');
 var extend = require('extend');
@@ -30,7 +31,7 @@ function config(grunt, options) {
                     { expand: true, cwd: options.serverPath, src: ['<%= JsTestAdapterOptions.lib %>/**/*.*'], dest: options.build },
                     { expand: true, cwd: options.serverPath, src: ['TestServer/**/*.*'], dest: options.build },
                     { expand: true, cwd: options.output, src: ['**', '!*.xml'], dest: options.build },
-                    { expand: true, cwd: options.serverPath, src: ['LICENSE'], dest: options.build }
+                    { expand: true, cwd: path.join(options.serverPath, '..'), src: ['LICENSE'], dest: options.build }
                 ]
             }
         },
