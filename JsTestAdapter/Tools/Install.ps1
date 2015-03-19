@@ -145,8 +145,7 @@ function config(grunt) {
     });
 
     jsTestAdapter.config(grunt, {
-        name: '$projectName',
-        output: 'bin'
+        name: '$projectName'
     });
 
     grunt.registerTask('default', []);

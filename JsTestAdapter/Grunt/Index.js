@@ -8,6 +8,7 @@ var defaultOptions = {
     build: 'build',
     dist: 'dist',
     output: 'bin',
+    lib: 'lib'
 };
 function config(grunt, options) {
     options = extend({}, defaultOptions, options);
@@ -26,7 +27,7 @@ function config(grunt, options) {
             JsTestAdapter: {
                 files: [
                     { expand: true, cwd: options.serverPath, src: getNodeModules(grunt, options.serverPath), dest: options.build },
-                    { expand: true, cwd: options.serverPath, src: ['lib/**/*.*'], dest: options.build },
+                    { expand: true, cwd: options.serverPath, src: ['<%= JsTestAdapterOptions.lib %>/**/*.*'], dest: options.build },
                     { expand: true, cwd: options.serverPath, src: ['TestServer/**/*.*'], dest: options.build },
                     { expand: true, cwd: options.output, src: ['**', '!*.xml'], dest: options.build },
                     { expand: true, cwd: options.serverPath, src: ['LICENSE'], dest: options.build }

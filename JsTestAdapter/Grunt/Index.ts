@@ -19,6 +19,7 @@ var defaultOptions: Options = {
     build: 'build',
     dist: 'dist',
     output: 'bin',
+    lib: 'lib'
 };
 
 export function config(grunt: any, options: Options): void {
@@ -44,7 +45,7 @@ export function config(grunt: any, options: Options): void {
                     // Node modules
                     { expand: true, cwd: options.serverPath, src: getNodeModules(grunt, options.serverPath), dest: options.build },
                     // Lib
-                    { expand: true, cwd: options.serverPath, src: ['lib/**/*.*'], dest: options.build },
+                    { expand: true, cwd: options.serverPath, src: ['<%= JsTestAdapterOptions.lib %>/**/*.*'], dest: options.build },
                     // TestServer
                     { expand: true, cwd: options.serverPath, src: ['TestServer/**/*.*'], dest: options.build },
                     // Binaries

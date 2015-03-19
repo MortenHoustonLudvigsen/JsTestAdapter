@@ -12,8 +12,23 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Base library to create Visual Studio test explorer adapters for javascript</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2015</copyright>
+    <copyright>Copyright 2015 Morten Houston Ludvigsen</copyright>
     <tags></tags>
+    <dependencies>
+      <dependency id="Newtonsoft.Json" version="6.0.8" />
+      <dependency id="ProcessRunner"   version="1.0.8" />
+      <dependency id="ReactiveSockets" version="0.2.6" />
+    </dependencies>    
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.ComponentModel.Composition" />
+      <frameworkAssembly assemblyName="System" />
+      <frameworkAssembly assemblyName="System.ComponentModel.Composition" />
+      <frameworkAssembly assemblyName="System.Core" />
+      <frameworkAssembly assemblyName="System.Net" />
+      <frameworkAssembly assemblyName="System.Xml.Linq" />
+      <frameworkAssembly assemblyName="Microsoft.CSharp" />
+      <frameworkAssembly assemblyName="System.Xml" />
+    </frameworkAssemblies>
   </metadata>
   <files>
     <file src="Dlls\*.*" target="lib\net45" />
