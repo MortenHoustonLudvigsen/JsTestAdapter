@@ -105,6 +105,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Grunt\GetContentTypes.js">
+      <DependentUpon>GetContentTypes.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\GetContentTypes.js.map">
+      <DependentUpon>GetContentTypes.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\GetNodeModules.js">
+      <DependentUpon>GetNodeModules.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\InitConfig.js">
+      <DependentUpon>InitConfig.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\InitConfig.js.map">
+      <DependentUpon>InitConfig.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\GetNodeModules.js.map">
+      <DependentUpon>GetNodeModules.ts</DependentUpon>
+    </Content>
     <None Include="Dlls\Microsoft.VisualStudio.Shell.12.0.dll" />
     <None Include="Dlls\Microsoft.VisualStudio.Shell.12.0.xml" />
     <None Include="Dlls\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" />
@@ -172,6 +190,9 @@
     <None Include="TestServer\Logger.js">
       <DependentUpon>Logger.ts</DependentUpon>
     </None>
+    <Content Include="Content\source.extension.vsixmanifest" />
+    <Content Include="gruntfile.js" />
+    <Content Include="TestServer\package.json" />
     <None Include="TestServer\SourceUtils.js">
       <DependentUpon>SourceUtils.ts</DependentUpon>
     </None>
@@ -184,6 +205,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Grunt\GetNodeModules.ts" />
+    <TypeScriptCompile Include="Grunt\GetContentTypes.ts" />
+    <TypeScriptCompile Include="Grunt\InitConfig.ts" />
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />
@@ -214,6 +238,7 @@
     <None Include="TestServer\TextFile.js">
       <DependentUpon>TextFile.ts</DependentUpon>
     </None>
+    <Content Include="Tools\Uninstall.ps1" />
     <None Include="Tools\Install.ps1" />
     <None Include="tsd.json" />
   </ItemGroup>

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>JsTestAdapter</id>
-    <version>0.0.1</version>
+    <version>0.0.0</version>
     <title>JsTestAdapter</title>
     <authors>Morten Houston Ludvigsen</authors>
     <owners>Morten Houston Ludvigsen</owners>
@@ -18,7 +18,10 @@
   <files>
     <file src="Dlls\*.*" target="lib\net45" />
     <file src="bin\NpmProxy.*" target="lib\net45" />
-    <file src="TestServer\**" target="TestServer" />
+    <file src="Content\**" target="Content" />
+    <file src="TestServer\**" target="Content\TestServer" exclude="TestServer\node_modules\**" />
+    <file src="Grunt\**" target="Content\Grunt" exclude="Grunt\node_modules\**" />
     <file src="Tools\**" target="Tools" />
+    <file src="tsd.json" target="Tools" />
   </files>
 </package>

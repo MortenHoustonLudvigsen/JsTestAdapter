@@ -36,11 +36,11 @@ var SourceUtils = (function () {
                 var position = {
                     line: Math.max(source.lineNumber || 1, 1),
                     column: Math.max(source.columnNumber || 1, 1) - 1,
-                    bias: SourceMap.SourceMapConsumer.GREATEST_LOWER_BOUND
+                    bias: SourceMap.SourceMapConsumer['GREATEST_LOWER_BOUND']
                 };
                 var orig = consumer.originalPositionFor(position);
                 if (!orig.source) {
-                    position.bias = SourceMap.SourceMapConsumer.LEAST_UPPER_BOUND;
+                    position.bias = SourceMap.SourceMapConsumer['LEAST_UPPER_BOUND'];
                     orig = consumer.originalPositionFor(position);
                 }
                 if (orig.source) {
