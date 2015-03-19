@@ -31,16 +31,28 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.Shell.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <Private>True</Private>
+      <Private>False</Private>
       <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.12.0.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <Private>True</Private>
+      <Private>False</Private>
       <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.Immutable.10.0.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
+      <Private>False</Private>
       <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestPlatform.ObjectModel">
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TestWindow.Interfaces">
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.TestWindow.Interfaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NpmProxy, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\NpmProxy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -56,33 +68,74 @@
   <ItemGroup>
     <Content Include="gruntfile.js" />
     <Content Include="Grunt\Config.js" />
-    <Content Include="Grunt\GetContentTypes.js" />
-    <Content Include="Grunt\GetNodeModules.js" />
-    <Content Include="Grunt\Index.js" />
-    <Content Include="TestServer\FreePort.js" />
-    <Content Include="TestServer\JsonServer.js" />
-    <Content Include="TestServer\Logger.js" />
-    <Content Include="TestServer\SourceUtils.js" />
-    <Content Include="TestServer\Specs.js" />
-    <Content Include="TestServer\TestServer.js" />
-    <Content Include="TestServer\TextFile.js" />
+    <Content Include="Grunt\GetContentTypes.js">
+      <DependentUpon>GetContentTypes.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\GetNodeModules.js">
+      <DependentUpon>GetNodeModules.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\Index.js">
+      <DependentUpon>Index.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\FreePort.js">
+      <DependentUpon>FreePort.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\JsonServer.js">
+      <DependentUpon>JsonServer.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\Logger.js">
+      <DependentUpon>Logger.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\SourceUtils.js">
+      <DependentUpon>SourceUtils.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\Specs.js">
+      <DependentUpon>Specs.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\TestServer.js">
+      <DependentUpon>TestServer.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\TextFile.js">
+      <DependentUpon>TextFile.ts</DependentUpon>
+    </Content>
     <Content Include="Vsix\Content_Types.xml" />
     <Content Include="Vsix\source.extension.vsixmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Grunt\Config.js.map" />
-    <None Include="Grunt\GetContentTypes.js.map" />
-    <None Include="Grunt\GetNodeModules.js.map" />
-    <None Include="Grunt\Index.js.map" />
+    <None Include="Grunt\GetContentTypes.js.map">
+      <DependentUpon>GetContentTypes.ts</DependentUpon>
+    </None>
+    <None Include="Grunt\GetNodeModules.js.map">
+      <DependentUpon>GetNodeModules.ts</DependentUpon>
+    </None>
+    <None Include="Grunt\Index.js.map">
+      <DependentUpon>Index.ts</DependentUpon>
+    </None>
     <None Include="package.json" />
-    <None Include="TestServer\FreePort.js.map" />
-    <None Include="TestServer\JsonServer.js.map" />
-    <None Include="TestServer\Logger.js.map" />
+    <None Include="packages.config" />
+    <None Include="TestServer\FreePort.js.map">
+      <DependentUpon>FreePort.ts</DependentUpon>
+    </None>
+    <None Include="TestServer\JsonServer.js.map">
+      <DependentUpon>JsonServer.ts</DependentUpon>
+    </None>
+    <None Include="TestServer\Logger.js.map">
+      <DependentUpon>Logger.ts</DependentUpon>
+    </None>
     <None Include="TestServer\package.json" />
-    <None Include="TestServer\SourceUtils.js.map" />
-    <None Include="TestServer\Specs.js.map" />
-    <None Include="TestServer\TestServer.js.map" />
-    <None Include="TestServer\TextFile.js.map" />
+    <None Include="TestServer\SourceUtils.js.map">
+      <DependentUpon>SourceUtils.ts</DependentUpon>
+    </None>
+    <None Include="TestServer\Specs.js.map">
+      <DependentUpon>Specs.ts</DependentUpon>
+    </None>
+    <None Include="TestServer\TestServer.js.map">
+      <DependentUpon>TestServer.ts</DependentUpon>
+    </None>
+    <None Include="TestServer\TextFile.js.map">
+      <DependentUpon>TextFile.ts</DependentUpon>
+    </None>
     <None Include="tsd.json" />
   </ItemGroup>
   <ItemGroup>
