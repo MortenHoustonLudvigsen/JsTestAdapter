@@ -30,6 +30,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.Shell.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.12.0.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.Immutable.10.0.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <Private>True</Private>
+      <HintPath>..\packages\JsTestAdapter.1.0.2\lib\net45\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -43,19 +55,53 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="gruntfile.js" />
+    <Content Include="Grunt\Config.js" />
+    <Content Include="Grunt\GetContentTypes.js" />
+    <Content Include="Grunt\GetNodeModules.js" />
+    <Content Include="Grunt\Index.js" />
+    <Content Include="TestServer\FreePort.js" />
+    <Content Include="TestServer\JsonServer.js" />
+    <Content Include="TestServer\Logger.js" />
+    <Content Include="TestServer\SourceUtils.js" />
+    <Content Include="TestServer\Specs.js" />
+    <Content Include="TestServer\TestServer.js" />
+    <Content Include="TestServer\TextFile.js" />
+    <Content Include="Vsix\Content_Types.xml" />
+    <Content Include="Vsix\source.extension.vsixmanifest" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Grunt\Config.js.map" />
+    <None Include="Grunt\GetContentTypes.js.map" />
+    <None Include="Grunt\GetNodeModules.js.map" />
+    <None Include="Grunt\Index.js.map" />
     <None Include="package.json" />
+    <None Include="TestServer\FreePort.js.map" />
+    <None Include="TestServer\JsonServer.js.map" />
+    <None Include="TestServer\Logger.js.map" />
+    <None Include="TestServer\package.json" />
+    <None Include="TestServer\SourceUtils.js.map" />
+    <None Include="TestServer\Specs.js.map" />
+    <None Include="TestServer\TestServer.js.map" />
+    <None Include="TestServer\TextFile.js.map" />
     <None Include="tsd.json" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Grunt\GetContentTypes.ts" />
+    <TypeScriptCompile Include="Grunt\GetNodeModules.ts" />
+    <TypeScriptCompile Include="Grunt\Index.ts" />
+    <TypeScriptCompile Include="TestServer\FreePort.ts" />
+    <TypeScriptCompile Include="TestServer\JsonServer.ts" />
+    <TypeScriptCompile Include="TestServer\Logger.ts" />
+    <TypeScriptCompile Include="TestServer\SourceUtils.ts" />
+    <TypeScriptCompile Include="TestServer\Specs.ts" />
+    <TypeScriptCompile Include="TestServer\TestServer.ts" />
+    <TypeScriptCompile Include="TestServer\TextFile.ts" />
     <TypeScriptCompile Include="typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\q\Q.d.ts" />
     <TypeScriptCompile Include="typings\source-map\source-map.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptModuleKind>commonjs</TypeScriptModuleKind>

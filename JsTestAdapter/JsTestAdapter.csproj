@@ -105,6 +105,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Vsix\Content_Types.xml" />
+    <Content Include="Grunt\Config.js">
+      <DependentUpon>Index.ts</DependentUpon>
+    </Content>
     <Content Include="Grunt\GetContentTypes.js">
       <DependentUpon>GetContentTypes.ts</DependentUpon>
     </Content>
@@ -113,12 +117,6 @@
     </Content>
     <Content Include="Grunt\GetNodeModules.js">
       <DependentUpon>GetNodeModules.ts</DependentUpon>
-    </Content>
-    <Content Include="Grunt\InitConfig.js">
-      <DependentUpon>InitConfig.ts</DependentUpon>
-    </Content>
-    <Content Include="Grunt\InitConfig.js.map">
-      <DependentUpon>InitConfig.ts</DependentUpon>
     </Content>
     <Content Include="Grunt\GetNodeModules.js.map">
       <DependentUpon>GetNodeModules.ts</DependentUpon>
@@ -181,6 +179,9 @@
     <Compile Include="TestServerClient\TestServer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Grunt\Config.js.map">
+      <DependentUpon>Index.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\FreePort.js">
       <DependentUpon>FreePort.ts</DependentUpon>
     </None>
@@ -190,7 +191,7 @@
     <None Include="TestServer\Logger.js">
       <DependentUpon>Logger.ts</DependentUpon>
     </None>
-    <Content Include="Content\source.extension.vsixmanifest" />
+    <Content Include="Content\Vsix\source.extension.vsixmanifest" />
     <Content Include="gruntfile.js" />
     <Content Include="TestServer\package.json" />
     <None Include="TestServer\SourceUtils.js">
@@ -207,7 +208,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="Grunt\GetNodeModules.ts" />
     <TypeScriptCompile Include="Grunt\GetContentTypes.ts" />
-    <TypeScriptCompile Include="Grunt\InitConfig.ts" />
+    <TypeScriptCompile Include="Grunt\Index.ts" />
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />

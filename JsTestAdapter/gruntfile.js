@@ -18,6 +18,6 @@ module.exports = function (grunt) {
     grunt.registerTask('AfterBuild', ['nugetpack:dist']);
     grunt.registerTask('default', ['']);
 
-    grunt.loadNpmTasks('grunt-xmlpoke');
+    grunt.loadNpmTasks('grunt-nuget');
     grunt.loadNpmTasks('grunt-nuget');
 };
