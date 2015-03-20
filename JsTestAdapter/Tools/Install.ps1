@@ -118,7 +118,12 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('CreatePackage', [
-        'JsTestAdapter-CreatePackage'
+        'clean:JsTestAdapter',
+        'copy:JsTestAdapter',
+        'JsTestAdapter-flatten-packages',
+        'xmlpoke:JsTestAdapter-vsix',
+        'JsTestAdapter-CreateContentTypes',
+        'compress:JsTestAdapter'
     ]);
 
     grunt.registerTask('ResetVS', [

@@ -132,14 +132,5 @@ export function config(grunt: any, options: Options): void {
             rootSuffix: options.rootSuffix
         }).then(() => done(), err => done(err));
     });
-
-    grunt.registerTask('JsTestAdapter-CreatePackage', [
-        'clean:JsTestAdapter',
-        'copy:JsTestAdapter',
-        'JsTestAdapter-flatten-packages',
-        'xmlpoke:JsTestAdapter-vsix',
-        'JsTestAdapter-CreateContentTypes',
-        'compress:JsTestAdapter'
-    ]);
 }
 
