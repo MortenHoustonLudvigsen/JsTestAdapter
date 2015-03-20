@@ -113,7 +113,7 @@ module.exports = function (grunt) {
 
     jsTestAdapter.config(grunt, {
         name: '$projectName',
-        bin: '$assemblyDir'
+        bin: '$assemblyDir',
         rootSuffix: '$projectName'
     });
 
