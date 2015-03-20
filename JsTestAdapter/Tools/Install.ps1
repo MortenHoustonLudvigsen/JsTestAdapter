@@ -57,6 +57,39 @@ CreateTextFile $JsTestAdapterJsonFile $project.ProjectItems @"
 "@
 
 ##########################################################
+# Create source.extension.vsixmanifest
+
+$vsixGuid = [guid]::NewGuid()
+$defaultVsix = @"
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="$projectName.$vsixGuid" Version="x.x.x" Language="en-US" Publisher="" />
+    <DisplayName>$projectName</DisplayName>
+    <Description xml:space="preserve">$projectName</Description>
+    <MoreInfo></MoreInfo>
+    <License></License>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Ultimate" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="$assemblyName" />
+    <Asset Type="UnitTestExtension" Path="$assemblyName" />
+  </Assets>
+</PackageManifest>
+"@
+
+$vsixFile = Join-Path $projectDir "source.extension.vsixmanifest"
+CreateTextFileIfNotExists $vsixFile $project.ProjectItems $defaultVsix
+
+
+##########################################################
 # Do not copy Visual Studio assemblies locally
 
 foreach ($reference in $project.Object.References)
@@ -67,6 +100,43 @@ foreach ($reference in $project.Object.References)
         $reference.CopyLocal = $false
     }
 }
+
+##########################################################
+# Create Gruntfile.js
+
+$defaultGruntfile = @"
+var jsTestAdapter = require('./Grunt/Index');
+
+module.exports = function (grunt) {
+    grunt.initConfig({
+    });
+
+    jsTestAdapter.config(grunt, {
+        name: '$projectName',
+        bin: '$assemblyDir'
+        rootSuffix: '$projectName'
+    });
+
+    grunt.registerTask('CreatePackage', [
+        'JsTestAdapter-CreatePackage'
+    ]);
+
+    grunt.registerTask('ResetVS', [
+        'JsTestAdapter-ResetVisualStudio'
+    ]);
+
+    grunt.registerTask('RunVS', [
+        'JsTestAdapter-ResetVisualStudio',
+        'JsTestAdapter-RunVisualStudio'
+    ]);
+
+    grunt.registerTask('default', ['CreatePackage']);
+}
+"@
+
+$gruntfileJs = Join-Path $projectDir "Gruntfile.js"
+CreateTextFileIfNotExists $gruntfileJs $project.ProjectItems $defaultGruntfile
+
 
 ##########################################################
 # Nest .js and .js.map
@@ -158,75 +228,6 @@ $package.devDependencies.psobject.properties | foreach {
 }
 
 Pop-Location
-
-##########################################################
-# Create Gruntfile.js
-
-$defaultGruntfile = @"
-var jsTestAdapter = require('./Grunt/Index');
-
-module.exports = function (grunt) {
-    grunt.initConfig({
-    });
-
-    jsTestAdapter.config(grunt, {
-        name: '$projectName',
-        bin: '$assemblyDir'
-    });
-
-    grunt.registerTask('CreatePackage', [
-        'JsTestAdapter-CreatePackage'
-    ]);
-
-    grunt.registerTask('ResetVS', [
-        'JsTestAdapter-ResetVisualStudio'
-    ]);
-
-    grunt.registerTask('RunVS', [
-        'JsTestAdapter-ResetVisualStudio',
-        'JsTestAdapter-RunVisualStudio'
-    ]);
-
-    grunt.registerTask('default', ['CreatePackage']);
-}
-"@
-
-$gruntfileJs = Join-Path $projectDir "Gruntfile.js"
-CreateTextFileIfNotExists $gruntfileJs $project.ProjectItems $defaultGruntfile
-
-
-##########################################################
-# Create source.extension.vsixmanifest
-
-$vsixGuid = [guid]::NewGuid()
-$defaultVsix = @"
-<?xml version="1.0" encoding="utf-8"?>
-<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
-  <Metadata>
-    <Identity Id="$projectName.$vsixGuid" Version="x.x.x" Language="en-US" Publisher="" />
-    <DisplayName>$projectName</DisplayName>
-    <Description xml:space="preserve">$projectName</Description>
-    <MoreInfo></MoreInfo>
-    <License></License>
-  </Metadata>
-  <Installation>
-    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Pro" />
-    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Premium" />
-    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Ultimate" />
-  </Installation>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
-  </Dependencies>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="$assemblyName" />
-    <Asset Type="UnitTestExtension" Path="$assemblyName" />
-  </Assets>
-</PackageManifest>
-"@
-
-$vsixFile = Join-Path $projectDir "source.extension.vsixmanifest"
-CreateTextFileIfNotExists $vsixFile $project.ProjectItems $defaultVsix
-
 
 ##########################################################
 # Done
