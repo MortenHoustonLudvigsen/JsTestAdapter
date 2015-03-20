@@ -19,7 +19,7 @@ namespace JsTestAdapter.TestAdapter
 
         #region ITestDiscoverer
 
-        public void DiscoverTests(IEnumerable<string> sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
+        public virtual void DiscoverTests(IEnumerable<string> sources, IDiscoveryContext discoveryContext, IMessageLogger logger, ITestCaseDiscoverySink discoverySink)
         {
             TestAdapterInfo = CreateTestAdapterInfo();
             var testLogger = TestAdapterInfo.CreateLogger(logger);
@@ -101,7 +101,7 @@ namespace JsTestAdapter.TestAdapter
             // Can not cancel
         }
 
-        public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        public virtual void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
             TestAdapterInfo = CreateTestAdapterInfo();
 
@@ -123,7 +123,7 @@ namespace JsTestAdapter.TestAdapter
             }
         }
 
-        public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        public virtual void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
             RunTests(tests.Select(t => t.Source).Distinct(), runContext, frameworkHandle);
         }
@@ -152,28 +152,28 @@ namespace JsTestAdapter.TestAdapter
             frameworkHandle.RecordStart(testCase);
             foreach (var result in spec.Results)
             {
-                RecordResult(testCase, result, ref outcome, frameworkHandle);
+                if (result.Skipped && outcome != TestOutcome.Failed)
+                {
+                    outcome = TestOutcome.Skipped;
+                }
+
+                if (result.Success && outcome == TestOutcome.None)
+                {
+                    outcome = TestOutcome.Passed;
+                }
+
+                if (!result.Success && !result.Skipped)
+                {
+                    outcome = TestOutcome.Failed;
+                }
+
+                frameworkHandle.RecordResult(GetResult(testCase, result, frameworkHandle));
             }
             frameworkHandle.RecordEnd(testCase, outcome);
         }
 
-        protected virtual void RecordResult(TestCase testCase, SpecResult result, ref TestOutcome outcome, IFrameworkHandle frameworkHandle)
+        protected virtual TestResult GetResult(TestCase testCase, SpecResult result, IFrameworkHandle frameworkHandle)
         {
-            if (result.Skipped && outcome != TestOutcome.Failed)
-            {
-                outcome = TestOutcome.Skipped;
-            }
-
-            if (result.Success && outcome == TestOutcome.None)
-            {
-                outcome = TestOutcome.Passed;
-            }
-
-            if (!result.Success && !result.Skipped)
-            {
-                outcome = TestOutcome.Failed;
-            }
-
             var testResult = new TestResult(testCase)
             {
                 ComputerName = Environment.MachineName,
@@ -209,7 +209,7 @@ namespace JsTestAdapter.TestAdapter
                 testResult.Messages.Add(new TestResultMessage(TestResultMessage.StandardOutCategory, result.Output));
             }
 
-            frameworkHandle.RecordResult(testResult);
+            return testResult;
         }
 
         protected static TestOutcome GetTestOutcome(SpecResult result)
