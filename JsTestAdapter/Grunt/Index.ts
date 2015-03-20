@@ -12,6 +12,9 @@ type Options = {
     build?: string;
     dist?: string;
     output?: string;
+    rootSuffix: string;
+    testProject?: string;
+    visualStudioVersion: string;
 };
 
 var defaultOptions: Options = {
@@ -20,7 +23,9 @@ var defaultOptions: Options = {
     build: 'build',
     dist: 'dist',
     output: 'bin',
-    lib: 'lib'
+    lib: 'lib',
+    rootSuffix: 'JsTestAdapter',
+    visualStudioVersion: process.env.VisualStudioVersion
 };
 
 export function config(grunt: any, options: Options): void {
@@ -97,7 +102,7 @@ export function config(grunt: any, options: Options): void {
 
     grunt.registerTask('JsTestAdapter-flatten-packages', function () {
         var done = this.async();
-        flatten(options.build, {}, function (err, res) {
+        flatten(options.build, {},(err, res) => {
             if (err) {
                 grunt.log.error(err);
                 done(false);
@@ -112,19 +117,23 @@ export function config(grunt: any, options: Options): void {
     grunt.registerTask('JsTestAdapter-ResetVisualStudio', function () {
         var done = this.async();
         TestVS.reset(grunt, {
-            version: '10.0',
-            rootSuffix: 'TestTestAdapter',
+            version: options.visualStudioVersion,
+            rootSuffix: options.rootSuffix,
             toolsDir: grunt.config('JsTestAdapterPackage').ToolsPath,
             vsixFile: grunt.config('JsTestAdapterValues').vsixFile
-        }).then(function () {
-            done();
-        }, function (err) {
-                grunt.log.error(err);
-                done(false);
-            });
+        }).then(() => done(), err => done(err));
     });
 
-    grunt.registerTask('JsTestAdapter', [
+    grunt.registerTask('JsTestAdapter-RunVisualStudio', function () {
+        var done = this.async();
+        TestVS.run(grunt, {
+            version: options.visualStudioVersion,
+            testProject: options.testProject,
+            rootSuffix: options.rootSuffix
+        }).then(() => done(), err => done(err));
+    });
+
+    grunt.registerTask('JsTestAdapter-CreatePackage', [
         'clean:JsTestAdapter',
         'copy:JsTestAdapter',
         'JsTestAdapter-flatten-packages',

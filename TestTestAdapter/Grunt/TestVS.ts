@@ -116,7 +116,8 @@ type Options = {
     version?: string;
     toolsDir?: string;
     rootSuffix: string;
-    vsixFile: string;
+    vsixFile?: string;
+    testProject?: string;
 };
 
 export function runCommand(grunt: any, command: string): Q.Promise<void> {
@@ -171,4 +172,15 @@ export function installVsix(grunt: any, options: Options): Q.Promise<void> {
 
 export function reset(grunt: any, options: Options): Q.Promise<void> {
     return cleanVsInstance(grunt, options).then(() => installVsix(grunt, options));
+}
+
+export function run(grunt: any, options: Options): Q.Promise<void> {
+    return getCurrentInstallation(options.version).then(installation => {
+        var command = format('"{VSExecutable}"', { VSExecutable: installation.devenv });
+        if (options.testProject) {
+            command += format(' "{TestProject}"', { TestProject: options.testProject });
+        }
+        command += format(' /RootSuffix {RootSuffix}', { RootSuffix: options.rootSuffix });
+        return command;
+    }).then(command => runCommand(grunt, command));
 }

@@ -10,7 +10,9 @@ var defaultOptions = {
     build: 'build',
     dist: 'dist',
     output: 'bin',
-    lib: 'lib'
+    lib: 'lib',
+    rootSuffix: 'JsTestAdapter',
+    visualStudioVersion: process.env.VisualStudioVersion
 };
 function config(grunt, options) {
     options = extend({}, defaultOptions, options);
@@ -87,18 +89,21 @@ function config(grunt, options) {
     grunt.registerTask('JsTestAdapter-ResetVisualStudio', function () {
         var done = this.async();
         TestVS.reset(grunt, {
-            version: '10.0',
-            rootSuffix: 'TestTestAdapter',
+            version: options.visualStudioVersion,
+            rootSuffix: options.rootSuffix,
             toolsDir: grunt.config('JsTestAdapterPackage').ToolsPath,
             vsixFile: grunt.config('JsTestAdapterValues').vsixFile
-        }).then(function () {
-            done();
-        }, function (err) {
-            grunt.log.error(err);
-            done(false);
-        });
+        }).then(function () { return done(); }, function (err) { return done(err); });
     });
-    grunt.registerTask('JsTestAdapter', [
+    grunt.registerTask('JsTestAdapter-RunVisualStudio', function () {
+        var done = this.async();
+        TestVS.run(grunt, {
+            version: options.visualStudioVersion,
+            testProject: options.testProject,
+            rootSuffix: options.rootSuffix
+        }).then(function () { return done(); }, function (err) { return done(err); });
+    });
+    grunt.registerTask('JsTestAdapter-CreatePackage', [
         'clean:JsTestAdapter',
         'copy:JsTestAdapter',
         'JsTestAdapter-flatten-packages',

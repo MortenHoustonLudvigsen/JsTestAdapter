@@ -1,7 +1,4 @@
 var jsTestAdapter = require('./Grunt/Index');
-var util = require('util');
-var regedit = require('regedit');
-var Slam = require('./Slam');
 
 module.exports = function (grunt) {
     grunt.initConfig({
@@ -12,22 +9,18 @@ module.exports = function (grunt) {
         bin: 'bin'
     });
 
-    grunt.registerTask('Slam', function () {
-        var done = this.async();
-        Slam.resetTestVS(grunt, {
-            version: '10.0',
-            toolsDir: grunt.config('JsTestAdapterPackage').ToolsPath,
-            rootSuffix: 'TestTestAdapter',
-            vsixFile: grunt.config('JsTestAdapterValues').vsixFile
-        }).then(function () {
-            done();
-        }, function (err) {
-            grunt.log.error(err);
-            done(false);
-        });
-    });
+    grunt.registerTask('CreatePackage', [
+        'JsTestAdapter-CreatePackage'
+    ]);
 
-    grunt.registerTask('default', []);
+    grunt.registerTask('ResetVS', [
+        'JsTestAdapter-ResetVisualStudio'
+    ]);
+
+    grunt.registerTask('RunVS', [
+        'JsTestAdapter-ResetVisualStudio',
+        'JsTestAdapter-RunVisualStudio'
+    ]);
+
+    grunt.registerTask('default', ['CreatePackage']);
 }
-
-

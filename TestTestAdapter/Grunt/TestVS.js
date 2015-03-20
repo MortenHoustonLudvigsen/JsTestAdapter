@@ -138,4 +138,15 @@ function reset(grunt, options) {
     return cleanVsInstance(grunt, options).then(function () { return installVsix(grunt, options); });
 }
 exports.reset = reset;
+function run(grunt, options) {
+    return getCurrentInstallation(options.version).then(function (installation) {
+        var command = format('"{VSExecutable}"', { VSExecutable: installation.devenv });
+        if (options.testProject) {
+            command += format(' "{TestProject}"', { TestProject: options.testProject });
+        }
+        command += format(' /RootSuffix {RootSuffix}', { RootSuffix: options.rootSuffix });
+        return command;
+    }).then(function (command) { return runCommand(grunt, command); });
+}
+exports.run = run;
 //# sourceMappingURL=TestVS.js.map

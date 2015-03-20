@@ -174,7 +174,20 @@ module.exports = function (grunt) {
         bin: '$assemblyDir'
     });
 
-    grunt.registerTask('default', []);
+    grunt.registerTask('CreatePackage', [
+        'JsTestAdapter-CreatePackage'
+    ]);
+
+    grunt.registerTask('ResetVS', [
+        'JsTestAdapter-ResetVisualStudio'
+    ]);
+
+    grunt.registerTask('RunVS', [
+        'JsTestAdapter-ResetVisualStudio',
+        'JsTestAdapter-RunVisualStudio'
+    ]);
+
+    grunt.registerTask('default', ['CreatePackage']);
 }
 "@
 
