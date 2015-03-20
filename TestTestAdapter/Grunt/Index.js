@@ -103,14 +103,6 @@ function config(grunt, options) {
             rootSuffix: options.rootSuffix
         }).then(function () { return done(); }, function (err) { return done(err); });
     });
-    grunt.registerTask('JsTestAdapter-CreatePackage', [
-        'clean:JsTestAdapter',
-        'copy:JsTestAdapter',
-        'JsTestAdapter-flatten-packages',
-        'xmlpoke:JsTestAdapter-vsix',
-        'JsTestAdapter-CreateContentTypes',
-        'compress:JsTestAdapter'
-    ]);
 }
 exports.config = config;
 //# sourceMappingURL=Index.js.map
