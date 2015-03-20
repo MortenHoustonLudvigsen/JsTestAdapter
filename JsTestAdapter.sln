@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsTestAdapter", "JsTestAdapter\JsTestAdapter.csproj", "{988CC656-0AF1-4F93-9D47-508FFE2877FA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48} = {818BB6A5-54FE-4C18-95A6-41E7725DBF48}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpmProxy", "NpmProxy\NpmProxy.csproj", "{65F8EF17-76CF-4F2F-9D3E-55CC1C95D065}"
 EndProject
@@ -17,6 +20,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTestAdapter", "TestTestAdapter\TestTestAdapter.csproj", "{E5E65337-19DF-48CA-A580-2DD86716DB45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InstallVsix", "InstallVsix", "{AF9D7FF9-B3F3-4E9D-BEE5-5EFDDFB10DD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shell.Interop", "InstallVsix\Shell.Interop\Shell.Interop.csproj", "{2AE4160D-F51A-4374-9F40-ECEE109D0F0D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstallVsix", "InstallVsix\InstallVsix\InstallVsix.csproj", "{818BB6A5-54FE-4C18-95A6-41E7725DBF48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,8 +49,20 @@ Global
 		{E5E65337-19DF-48CA-A580-2DD86716DB45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5E65337-19DF-48CA-A580-2DD86716DB45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5E65337-19DF-48CA-A580-2DD86716DB45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AE4160D-F51A-4374-9F40-ECEE109D0F0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AE4160D-F51A-4374-9F40-ECEE109D0F0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AE4160D-F51A-4374-9F40-ECEE109D0F0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AE4160D-F51A-4374-9F40-ECEE109D0F0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2AE4160D-F51A-4374-9F40-ECEE109D0F0D} = {AF9D7FF9-B3F3-4E9D-BEE5-5EFDDFB10DD7}
+		{818BB6A5-54FE-4C18-95A6-41E7725DBF48} = {AF9D7FF9-B3F3-4E9D-BEE5-5EFDDFB10DD7}
 	EndGlobalSection
 EndGlobal

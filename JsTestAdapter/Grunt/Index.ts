@@ -1,7 +1,8 @@
 ﻿import path = require('path');
-import getNodeModules = require('./GetNodeModules');
-import getContentTypes = require('./GetContentTypes');
 import extend = require('extend');
+import getNodeModules = require('./GetNodeModules');
+import createContentTypes = require('./CreateContentTypes');
+import TestVS = require('./TestVS');
 var flatten = require('flatten-packages');
 
 type Options = {
@@ -33,7 +34,11 @@ export function config(grunt: any, options: Options): void {
     grunt.config.merge({
         // read in the project settings from the package.json file into the pkg property
         pkg: grunt.file.readJSON(options.packagePath),
+        JsTestAdapterPackage: grunt.file.readJSON('JsTestAdapter.json'),
         JsTestAdapterOptions: options,
+        JsTestAdapterValues: {
+            vsixFile: '<%= JsTestAdapterOptions.dist %>/<%= JsTestAdapterOptions.name %>.vsix'
+        },
 
         clean: {
             JsTestAdapter: [options.build, options.dist]
@@ -67,19 +72,7 @@ export function config(grunt: any, options: Options): void {
                     ]
                 },
                 files: {
-                    '<%= JsTestAdapterOptions.build %>/extension.vsixmanifest': 'Vsix/source.extension.vsixmanifest'
-                }
-            },
-            'JsTestAdapter-contentTypes': {
-                options: {
-                    xpath: '/Types',
-                    valueType: 'append',
-                    value: function (node) {
-                        return getContentTypes(grunt, options.build);
-                    }
-                },
-                files: {
-                    '<%= JsTestAdapterOptions.build %>/[Content_Types].xml': 'Vsix/Content_Types.xml'
+                    '<%= JsTestAdapterOptions.build %>/extension.vsixmanifest': 'source.extension.vsixmanifest'
                 }
             }
         },
@@ -89,13 +82,17 @@ export function config(grunt: any, options: Options): void {
                 options: {
                     level: 9,
                     mode: 'zip',
-                    archive: '<%= JsTestAdapterOptions.dist %>/<%= JsTestAdapterOptions.name %>.vsix'
+                    archive: '<%= JsTestAdapterValues.vsixFile %>'
                 },
                 files: [
                     { expand: true, cwd: options.build, src: ['**/*'], dest: '/' }
                 ]
             }
         }
+    });
+
+    grunt.registerTask('JsTestAdapter-CreateContentTypes', function () {
+        createContentTypes(grunt, options.build, path.join(options.build, '[Content_Types].xml'));
     });
 
     grunt.registerTask('JsTestAdapter-flatten-packages', function () {
@@ -112,12 +109,27 @@ export function config(grunt: any, options: Options): void {
         });
     });
 
+    grunt.registerTask('JsTestAdapter-ResetVisualStudio', function () {
+        var done = this.async();
+        TestVS.reset(grunt, {
+            version: '10.0',
+            rootSuffix: 'TestTestAdapter',
+            toolsDir: grunt.config('JsTestAdapterPackage').ToolsPath,
+            vsixFile: grunt.config('JsTestAdapterValues').vsixFile
+        }).then(function () {
+            done();
+        }, function (err) {
+                grunt.log.error(err);
+                done(false);
+            });
+    });
+
     grunt.registerTask('JsTestAdapter', [
         'clean:JsTestAdapter',
         'copy:JsTestAdapter',
         'JsTestAdapter-flatten-packages',
         'xmlpoke:JsTestAdapter-vsix',
-        'xmlpoke:JsTestAdapter-contentTypes',
+        'JsTestAdapter-CreateContentTypes',
         'compress:JsTestAdapter'
     ]);
 }

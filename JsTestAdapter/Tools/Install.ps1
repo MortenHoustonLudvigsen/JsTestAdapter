@@ -1,9 +1,5 @@
 ﻿param($installPath, $toolsPath, $package, $project)
 
-$projectDir = [System.IO.Path]::GetDirectoryName($project.FullName)
-$projectName = $project.Name
-$toolsDir = Join-Path $installPath "Tools"
-
 function GetRelativePath($base, $path)
 {
     $tmp = Get-Location
@@ -13,6 +9,17 @@ function GetRelativePath($base, $path)
     return $result.Replace("\", "/")
 }
 
+function GetAssemblyPath()
+{
+    $fullPath = $project.Properties.Item("FullPath").Value.ToString()
+    $outputPath = $project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString()
+    #$outputDir = Join-Path $fullPath $outputPath
+    $outputDir = $outputPath
+    $outputFileName = $project.Properties.Item("OutputFileName").Value.ToString()
+    $assemblyPath = Join-Path $outputDir $outputFileName
+    return $assemblyPath
+}
+
 function CreateTextFile($path, $projectItems, $text)
 {
     $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
@@ -20,11 +27,34 @@ function CreateTextFile($path, $projectItems, $text)
     return $projectItems.AddFromFile($path)
 }
 
-function CopyFile($from, $to, $projectItems)
+function CreateTextFileIfNotExists($path, $projectItems, $text)
 {
-    Copy-Item $from $to
-    return $projectItems.AddFromFile($to)
+    if (Test-Path $path)
+    {
+        return $projectItems.AddFromFile($path)
+    }
+    else
+    {
+        return CreateTextFile $path $projectItems $text
+    }
 }
+
+$projectDir = [System.IO.Path]::GetDirectoryName($project.FullName)
+$projectName = $project.Name
+$assemblyPath = GetAssemblyPath
+$assemblyDir = [System.IO.Path]::GetDirectoryName($assemblyPath)
+$assemblyName = [System.IO.Path]::GetFileName($assemblyPath)
+
+##########################################################
+# Create JsTestAdapter.json
+
+$JsTestAdapterJsonFile = Join-Path $projectDir "JsTestAdapter.json"
+CreateTextFile $JsTestAdapterJsonFile $project.ProjectItems @"
+{
+    "InstallPath": "$(GetRelativePath $projectDir $installPath)",
+    "ToolsPath": "$(GetRelativePath $projectDir $toolsPath)"
+}
+"@
 
 ##########################################################
 # Do not copy Visual Studio assemblies locally
@@ -79,7 +109,7 @@ NestItems "Grunt" $project.ProjectItems.Item("Grunt").ProjectItems
 # Add typescript typings
 
 Push-Location $projectDir
-$tsdFile = Join-Path $toolsDir "tsd.json"
+$tsdFile = Join-Path $toolsPath "tsd.json"
 $tsd = Get-Content -Raw -Path $tsdFile | ConvertFrom-Json
 $tsd.installed.psobject.properties | foreach {
     $module = $_.Name.Substring(0, $_.Name.IndexOf("/"))
@@ -104,16 +134,11 @@ $defaultPackageFile = @"
 
 Write-Host Install npm packages
 
-$packageItem = $project.ProjectItems | Where-Object { $_.Name -eq "package.json" } | Select-Object -First 1
-
-if (!$packageItem)
-{
-    $packageFile = Join-Path $projectDir "package.json"
-    CreateTextFile $packageFile $project.ProjectItems $defaultPackageFile
-}
+$packageFile = Join-Path $projectDir "package.json"
+CreateTextFileIfNotExists $packageFile $project.ProjectItems $defaultPackageFile
 
 Push-Location $projectDir
-$packageFile = Join-Path $toolsDir "package.json"
+$packageFile = Join-Path $toolsPath "package.json"
 $package = Get-Content -Raw -Path $packageFile | ConvertFrom-Json
 
 $package.dependencies.psobject.properties | foreach {
@@ -135,36 +160,59 @@ $package.devDependencies.psobject.properties | foreach {
 Pop-Location
 
 ##########################################################
-# Create Gruntfile.ts
+# Create Gruntfile.js
 
-$defaultGruntfileTs = @"
-import jsTestAdapter = require('./Grunt/Index');
+$defaultGruntfile = @"
+var jsTestAdapter = require('./Grunt/Index');
 
-function config(grunt) {
+module.exports = function (grunt) {
     grunt.initConfig({
     });
 
     jsTestAdapter.config(grunt, {
-        name: '$projectName'
+        name: '$projectName',
+        bin: '$assemblyDir'
     });
 
     grunt.registerTask('default', []);
 }
-
-export = config;
 "@
 
-$gruntfileItem = $project.ProjectItems | Where-Object { $_.Name -eq "Gruntfile.ts" -or $_.Name -eq "Gruntfile.js" } | Select-Object -First 1
-if (!$gruntfileItem)
-{
-    $gruntfileTs = Join-Path $projectDir "Gruntfile.ts"
-    $gruntfileJs = Join-Path $projectDir "Gruntfile.js"
-    $gruntfileJsMap = Join-Path $projectDir "Gruntfile.js.map"
-    $gruntFileItem = CreateTextFile $gruntfileTs $project.ProjectItems $defaultGruntfileTs
+$gruntfileJs = Join-Path $projectDir "Gruntfile.js"
+CreateTextFileIfNotExists $gruntfileJs $project.ProjectItems $defaultGruntfile
 
-    CreateTextFile $gruntfileJs $gruntFileItem.ProjectItems ""
-    CreateTextFile $gruntfileJsMap $gruntFileItem.ProjectItems ""
-}
+
+##########################################################
+# Create source.extension.vsixmanifest
+
+$vsixGuid = [guid]::NewGuid()
+$defaultVsix = @"
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="$projectName.$vsixGuid" Version="x.x.x" Language="en-US" Publisher="" />
+    <DisplayName>$projectName</DisplayName>
+    <Description xml:space="preserve">$projectName</Description>
+    <MoreInfo></MoreInfo>
+    <License></License>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Pro" />
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Premium" />
+    <InstallationTarget Version="[12.0,14.0]" Id="Microsoft.VisualStudio.Ultimate" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="$assemblyName" />
+    <Asset Type="UnitTestExtension" Path="$assemblyName" />
+  </Assets>
+</PackageManifest>
+"@
+
+$vsixFile = Join-Path $projectDir "source.extension.vsixmanifest"
+CreateTextFileIfNotExists $vsixFile $project.ProjectItems $defaultVsix
 
 
 ##########################################################

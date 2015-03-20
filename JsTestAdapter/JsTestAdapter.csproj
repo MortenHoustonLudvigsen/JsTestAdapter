@@ -106,12 +106,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Vsix\Content_Types.xml" />
-    <Content Include="Grunt\GetContentTypes.js">
-      <DependentUpon>GetContentTypes.ts</DependentUpon>
-    </Content>
-    <Content Include="Grunt\GetContentTypes.js.map">
-      <DependentUpon>GetContentTypes.ts</DependentUpon>
+    <Content Include="Grunt\CreateContentTypes.js">
+      <DependentUpon>CreateContentTypes.ts</DependentUpon>
     </Content>
     <Content Include="Grunt\GetNodeModules.js">
       <DependentUpon>GetNodeModules.ts</DependentUpon>
@@ -180,6 +176,12 @@
     <Content Include="Grunt\Index.js.map">
       <DependentUpon>Index.ts</DependentUpon>
     </Content>
+    <Content Include="Grunt\CreateContentTypes.js.map">
+      <DependentUpon>CreateContentTypes.ts</DependentUpon>
+    </Content>
+    <Content Include="Grunt\TestVS.js.map">
+      <DependentUpon>TestVS.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\FreePort.js">
       <DependentUpon>FreePort.ts</DependentUpon>
     </None>
@@ -189,7 +191,6 @@
     <None Include="TestServer\Logger.js">
       <DependentUpon>Logger.ts</DependentUpon>
     </None>
-    <Content Include="Content\Vsix\source.extension.vsixmanifest" />
     <Content Include="gruntfile.js" />
     <Content Include="Grunt\Index.js">
       <DependentUpon>Index.ts</DependentUpon>
@@ -203,12 +204,16 @@
     <None Include="TestServer\TestServer.js">
       <DependentUpon>TestServer.ts</DependentUpon>
     </None>
+    <Content Include="Grunt\TestVS.js">
+      <DependentUpon>TestVS.ts</DependentUpon>
+    </Content>
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Grunt\CreateContentTypes.ts" />
     <TypeScriptCompile Include="Grunt\GetNodeModules.ts" />
-    <TypeScriptCompile Include="Grunt\GetContentTypes.ts" />
     <TypeScriptCompile Include="Grunt\Index.ts" />
+    <TypeScriptCompile Include="Grunt\TestVS.ts" />
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />

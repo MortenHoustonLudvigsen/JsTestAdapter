@@ -1,10 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="[Package name].[Guid]" Version="x.x.x" Language="en-US" Publisher="[Author]" />
-    <DisplayName>[Package display name]</DisplayName>
-    <Description xml:space="preserve">[Package description]</Description>
-    <MoreInfo>[Link]</MoreInfo>
+    <Identity Id="TestTestAdapter.aed34bb5-041d-46d5-8fa8-fc18817d8048" Version="x.x.x" Language="en-US" Publisher="Morten Houston Ludvigsen" />
+    <DisplayName>TestTestAdapter</DisplayName>
+    <Description xml:space="preserve">TestTestAdapter</Description>
+    <MoreInfo>https://github.com/MortenHoustonLudvigsen/JsTestAdapter</MoreInfo>
     <License>LICENSE</License>
   </Metadata>
   <Installation>
@@ -16,7 +16,7 @@
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
   </Dependencies>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="[Package DLL]" />
-    <Asset Type="UnitTestExtension" Path="[Package DLL]" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="TestTestAdapter.dll" />
+    <Asset Type="UnitTestExtension" Path="TestTestAdapter.dll" />
   </Assets>
 </PackageManifest>
