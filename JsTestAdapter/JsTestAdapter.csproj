@@ -204,6 +204,12 @@
     <Content Include="TestServer\TestContext.js.map">
       <DependentUpon>TestContext.ts</DependentUpon>
     </Content>
+    <Content Include="TestServer\TestReporter.js">
+      <DependentUpon>TestReporter.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\TestReporter.js.map">
+      <DependentUpon>TestReporter.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\TestServer.js">
       <DependentUpon>TestServer.ts</DependentUpon>
     </None>
@@ -223,6 +229,7 @@
     <TypeScriptCompile Include="TestServer\SourceUtils.ts" />
     <TypeScriptCompile Include="TestServer\Specs.ts" />
     <TypeScriptCompile Include="TestServer\TestContext.ts" />
+    <TypeScriptCompile Include="TestServer\TestReporter.ts" />
     <TypeScriptCompile Include="TestServer\TestServer.ts" />
     <TypeScriptCompile Include="TestServer\TextFile.ts" />
     <TypeScriptCompile Include="typings\extend\extend.d.ts" />
