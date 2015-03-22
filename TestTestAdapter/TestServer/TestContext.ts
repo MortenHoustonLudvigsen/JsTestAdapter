@@ -39,7 +39,7 @@ class TestContext {
     }
 
     getFullyQualifiedName(spec: Specs.Spec): string {
-        var fullyQualifiedName = this.server.namingUtils.getFullyQualifiedName(spec, this.server);
+        var fullyQualifiedName = this.server.extensions.getFullyQualifiedName(spec, this.server);
         if (this.fullyQualifiedNames[fullyQualifiedName]) {
             var no = 2;
             while (this.fullyQualifiedNames[fullyQualifiedName + '-' + no]) {
@@ -51,7 +51,11 @@ class TestContext {
     }
 
     getDisplayName(spec: Specs.Spec): string {
-        return this.server.namingUtils.getDisplayName(spec, this.server);
+        return this.server.extensions.getDisplayName(spec, this.server);
+    }
+
+    getTraits(spec: Specs.Spec): Specs.Trait[] {
+        return this.server.extensions.getTraits(spec, this.server);
     }
 
     adjustResults() {

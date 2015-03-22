@@ -25,6 +25,7 @@ var TestReporter = (function () {
             };
             existingSpec.fullyQualifiedName = context.testContext.getFullyQualifiedName(existingSpec);
             existingSpec.displayName = context.testContext.getDisplayName(existingSpec);
+            existingSpec.traits = context.testContext.getTraits(existingSpec);
             this.specs.push(existingSpec);
         }
         return existingSpec;

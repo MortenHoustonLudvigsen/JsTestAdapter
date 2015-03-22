@@ -1,13 +1,18 @@
 ﻿import TestContext = require('./TestContext');
 
-export interface NamingUtils {
-    getDisplayName(spec: Spec, server: Server);
-    getFullyQualifiedName(spec: Spec, server: Server);
+export interface TraitGetter {
+    (spec: Spec, server: Server): Trait[];
+}
+
+export interface Extensions {
+    getDisplayName?(spec: Spec, server: Server): string;
+    getFullyQualifiedName?(spec: Spec, server: Server): string;
+    getTraits?: TraitGetter;
 }
 
 export interface Server {
-    projectName: string;
-    namingUtils: NamingUtils;
+    testContainerName: string;
+    extensions: Extensions;
     testRunStarted(): void;
     testRunCompleted(specs: Spec[]): void;
 }
@@ -52,7 +57,13 @@ export interface Spec {
     displayName?: string;
     suite: string[];
     source: Source;
+    traits?: Trait[];
     results?: SpecResult[];
+}
+
+export interface Trait {
+    name: string;
+    value: string;
 }
 
 export interface SpecResult {

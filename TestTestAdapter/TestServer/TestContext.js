@@ -23,7 +23,7 @@ var TestContext = (function () {
         return util.format('-error-%d', this.nextErrorId++);
     };
     TestContext.prototype.getFullyQualifiedName = function (spec) {
-        var fullyQualifiedName = this.server.namingUtils.getFullyQualifiedName(spec, this.server);
+        var fullyQualifiedName = this.server.extensions.getFullyQualifiedName(spec, this.server);
         if (this.fullyQualifiedNames[fullyQualifiedName]) {
             var no = 2;
             while (this.fullyQualifiedNames[fullyQualifiedName + '-' + no]) {
@@ -34,7 +34,10 @@ var TestContext = (function () {
         return fullyQualifiedName;
     };
     TestContext.prototype.getDisplayName = function (spec) {
-        return this.server.namingUtils.getDisplayName(spec, this.server);
+        return this.server.extensions.getDisplayName(spec, this.server);
+    };
+    TestContext.prototype.getTraits = function (spec) {
+        return this.server.extensions.getTraits(spec, this.server);
     };
     TestContext.prototype.adjustResults = function () {
         this.adjustTimes();
