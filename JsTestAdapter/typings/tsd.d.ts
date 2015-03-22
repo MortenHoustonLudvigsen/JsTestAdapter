@@ -3,3 +3,4 @@
 /// <reference path="q/Q.d.ts" />
 /// <reference path="node/node.d.ts" />
 /// <reference path="extend/extend.d.ts" />
+/// <reference path="semver/semver.d.ts" />

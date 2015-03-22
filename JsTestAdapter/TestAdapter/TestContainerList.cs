@@ -47,7 +47,8 @@ namespace JsTestAdapter.TestAdapter
 
         public void RemoveDuplicates()
         {
-            var containersToRemove = this.Where(c => this.Any(d => d.IsDuplicate(c))).ToList();
+            var containers = this.ToList();
+            var containersToRemove = containers.Where(c => containers.Any(d => d.IsDuplicate(c))).ToList();
 
             foreach (var container in containersToRemove)
             {

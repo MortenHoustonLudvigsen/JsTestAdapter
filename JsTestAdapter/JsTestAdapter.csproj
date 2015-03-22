@@ -115,6 +115,7 @@
     <Content Include="Grunt\GetNodeModules.js.map">
       <DependentUpon>GetNodeModules.ts</DependentUpon>
     </Content>
+    <Content Include="build.json" />
     <None Include="Dlls\Microsoft.VisualStudio.Shell.12.0.dll" />
     <None Include="Dlls\Microsoft.VisualStudio.Shell.12.0.xml" />
     <None Include="Dlls\Microsoft.VisualStudio.Shell.Immutable.10.0.dll" />
@@ -182,6 +183,12 @@
     <Content Include="Grunt\TestVS.js.map">
       <DependentUpon>TestVS.ts</DependentUpon>
     </Content>
+    <Content Include="TestServer\Extensions.js">
+      <DependentUpon>Extensions.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\Extensions.js.map">
+      <DependentUpon>Extensions.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\FreePort.js">
       <DependentUpon>FreePort.ts</DependentUpon>
     </None>
@@ -223,6 +230,7 @@
     <TypeScriptCompile Include="Grunt\GetNodeModules.ts" />
     <TypeScriptCompile Include="Grunt\Index.ts" />
     <TypeScriptCompile Include="Grunt\TestVS.ts" />
+    <TypeScriptCompile Include="TestServer\Extensions.ts" />
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />

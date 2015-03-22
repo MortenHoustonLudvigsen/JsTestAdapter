@@ -1,14 +1,30 @@
-﻿import JsonServer = require('./JsonServer'); 
+﻿import JsonServer = require('./JsonServer');
 import Specs = require('./Specs');
+import DefaultNamingUtils = require('./DefaultNamingUtils');
 import Q = require('q');
 
-class TestServer extends JsonServer.Server {
-    constructor(public port: number = 0, public host?: string) {
+class TestServer extends JsonServer.Server implements Specs.Server {
+    constructor(public projectName: string, public port: number = 0, public host?: string) {
         super(port, host);
     }
 
+    namingUtils: Specs.NamingUtils = DefaultNamingUtils;
     events: Q.Deferred<void> = Q.defer<void>();
     specs: Q.Deferred<Specs.Spec[]> = Q.defer<Specs.Spec[]>();
+
+    loadNamingUtils(namingModule: string) {
+        function ifFn(fn: any, defaultFn: any): any {
+            return typeof fn === 'function' ? fn : defaultFn;
+        }
+
+        var namingUtils = require(namingModule);
+        if (namingUtils) {
+            this.namingUtils = {
+                getDisplayName: ifFn(namingUtils.getDisplayName, DefaultNamingUtils.getDisplayName),
+                getFullyQualifiedName: ifFn(namingUtils.getFullyQualifiedName, DefaultNamingUtils.getFullyQualifiedName)
+            };
+        }
+    }
 
     onError(error: any, connection: JsonServer.Connection) {
     }

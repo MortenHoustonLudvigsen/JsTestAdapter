@@ -5,15 +5,18 @@ var __extends = this.__extends || function (d, b) {
     d.prototype = new __();
 };
 var JsonServer = require('./JsonServer');
+var DefaultNamingUtils = require('./DefaultNamingUtils');
 var Q = require('q');
 var TestServer = (function (_super) {
     __extends(TestServer, _super);
-    function TestServer(port, host) {
+    function TestServer(projectName, port, host) {
         var _this = this;
         if (port === void 0) { port = 0; }
         _super.call(this, port, host);
+        this.projectName = projectName;
         this.port = port;
         this.host = host;
+        this.namingUtils = DefaultNamingUtils;
         this.events = Q.defer();
         this.specs = Q.defer();
         this.testRunStartedCommand = this.addCommand('test run started', function (command, message, connection) {
@@ -62,6 +65,18 @@ var TestServer = (function (_super) {
             return Q.resolve(undefined);
         });
     }
+    TestServer.prototype.loadNamingUtils = function (namingModule) {
+        function ifFn(fn, defaultFn) {
+            return typeof fn === 'function' ? fn : defaultFn;
+        }
+        var namingUtils = require(namingModule);
+        if (namingUtils) {
+            this.namingUtils = {
+                getDisplayName: ifFn(namingUtils.getDisplayName, DefaultNamingUtils.getDisplayName),
+                getFullyQualifiedName: ifFn(namingUtils.getFullyQualifiedName, DefaultNamingUtils.getFullyQualifiedName)
+            };
+        }
+    };
     TestServer.prototype.onError = function (error, connection) {
     };
     TestServer.prototype.onClose = function (had_error, connection) {

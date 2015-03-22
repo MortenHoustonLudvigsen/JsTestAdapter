@@ -78,9 +78,15 @@ namespace JsTestAdapter.TestAdapter
 
         protected virtual TestCase CreateTestCase(TestSourceSettings settings, Spec spec)
         {
-            var fullyQualifiedName = string.Format("{0} / {1}", settings.Name, spec.UniqueName);
-            var testCase = new TestCase(fullyQualifiedName, TestAdapterInfo.ExecutorUri, settings.Source);
-            testCase.DisplayName = spec.Description;
+            var testCase = new TestCase(spec.FullyQualifiedName, TestAdapterInfo.ExecutorUri, settings.Source);
+            testCase.DisplayName = spec.DisplayName;
+            if (spec.Traits != null)
+            {
+                foreach (var trait in spec.Traits)
+                {
+                    testCase.Traits.Add(trait.Name, trait.Value);
+                }
+            }
             if (spec.Source != null)
             {
                 testCase.CodeFilePath = spec.Source.FileName;
