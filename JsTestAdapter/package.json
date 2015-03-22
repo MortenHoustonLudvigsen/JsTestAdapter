@@ -1,6 +1,6 @@
 {
   "name": "JsTestAdapter",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "devDependencies": {
     "extend": "^2.0.0",
