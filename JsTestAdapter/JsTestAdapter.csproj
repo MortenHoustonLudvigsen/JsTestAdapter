@@ -192,9 +192,21 @@
     <None Include="TestServer\FreePort.js">
       <DependentUpon>FreePort.ts</DependentUpon>
     </None>
+    <Content Include="TestServer\JsonClient.js">
+      <DependentUpon>JsonClient.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\JsonConnection.js.map">
+      <DependentUpon>JsonConnection.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\JsonClient.js.map">
+      <DependentUpon>JsonClient.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\JsonServer.js">
       <DependentUpon>JsonServer.ts</DependentUpon>
     </None>
+    <Content Include="TestServer\JsonServerCommand.js.map">
+      <DependentUpon>JsonServerCommand.ts</DependentUpon>
+    </Content>
     <None Include="TestServer\Logger.js">
       <DependentUpon>Logger.ts</DependentUpon>
     </None>
@@ -208,14 +220,26 @@
     <None Include="TestServer\Specs.js">
       <DependentUpon>Specs.ts</DependentUpon>
     </None>
+    <Content Include="TestServer\JsonConnection.js">
+      <DependentUpon>JsonConnection.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\JsonServerCommand.js">
+      <DependentUpon>JsonServerCommand.ts</DependentUpon>
+    </Content>
     <Content Include="TestServer\TestContext.js.map">
       <DependentUpon>TestContext.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\TestNetServer.js">
+      <DependentUpon>TestNetServer.ts</DependentUpon>
     </Content>
     <Content Include="TestServer\TestReporter.js">
       <DependentUpon>TestReporter.ts</DependentUpon>
     </Content>
     <Content Include="TestServer\TestReporter.js.map">
       <DependentUpon>TestReporter.ts</DependentUpon>
+    </Content>
+    <Content Include="TestServer\TestNetServer.js.map">
+      <DependentUpon>TestNetServer.ts</DependentUpon>
     </Content>
     <None Include="TestServer\TestServer.js">
       <DependentUpon>TestServer.ts</DependentUpon>
@@ -232,11 +256,15 @@
     <TypeScriptCompile Include="Grunt\TestVS.ts" />
     <TypeScriptCompile Include="TestServer\Extensions.ts" />
     <TypeScriptCompile Include="TestServer\FreePort.ts" />
+    <TypeScriptCompile Include="TestServer\JsonClient.ts" />
+    <TypeScriptCompile Include="TestServer\JsonConnection.ts" />
     <TypeScriptCompile Include="TestServer\JsonServer.ts" />
+    <TypeScriptCompile Include="TestServer\JsonServerCommand.ts" />
     <TypeScriptCompile Include="TestServer\Logger.ts" />
     <TypeScriptCompile Include="TestServer\SourceUtils.ts" />
     <TypeScriptCompile Include="TestServer\Specs.ts" />
     <TypeScriptCompile Include="TestServer\TestContext.ts" />
+    <TypeScriptCompile Include="TestServer\TestNetServer.ts" />
     <TypeScriptCompile Include="TestServer\TestReporter.ts" />
     <TypeScriptCompile Include="TestServer\TestServer.ts" />
     <TypeScriptCompile Include="TestServer\TextFile.ts" />
