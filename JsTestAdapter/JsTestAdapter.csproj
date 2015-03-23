@@ -240,10 +240,12 @@
     <TypeScriptCompile Include="TestServer\TestReporter.ts" />
     <TypeScriptCompile Include="TestServer\TestServer.ts" />
     <TypeScriptCompile Include="TestServer\TextFile.ts" />
+    <TypeScriptCompile Include="Tools\UpdatePackageJson.ts" />
     <TypeScriptCompile Include="typings\extend\extend.d.ts" />
     <TypeScriptCompile Include="typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\q\Q.d.ts" />
+    <TypeScriptCompile Include="typings\semver\semver.d.ts" />
     <TypeScriptCompile Include="typings\source-map\source-map.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
@@ -269,6 +271,13 @@
     </Content>
     <Content Include="Tools\Uninstall.ps1" />
     <None Include="Tools\Install.ps1" />
+    <Content Include="Tools\UpdatePackageJson.js">
+      <DependentUpon>UpdatePackageJson.ts</DependentUpon>
+    </Content>
+    <Content Include="Tools\UpdatePackageJson.js.map">
+      <DependentUpon>UpdatePackageJson.ts</DependentUpon>
+    </Content>
+    <Content Include="Tools\package.json" />
     <None Include="tsd.json" />
   </ItemGroup>
   <ItemGroup>

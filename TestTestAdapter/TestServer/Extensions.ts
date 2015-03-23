@@ -32,26 +32,25 @@ class Extensions implements Specs.Extensions {
     }
 
     getFullyQualifiedName(spec: Specs.Spec, server: Specs.Server): string {
-        var classNameParts = [];
+        var parts = [];
         if (server.testContainerName) {
-            classNameParts.push(server.testContainerName);
+            parts.push(server.testContainerName);
         }
-        var parts = spec.suite.slice(0);
-        if (parts.length > 0) {
-            classNameParts.push(parts.shift());
-        }
-        parts.push(spec.description);
-        return [classNameParts.join('/'), parts.join(' ')]
+        var suite = spec.suite.slice(0);
+        parts.push(suite.shift());
+        suite.push(spec.description);
+        parts.push(suite.join(' '));
+        return parts
             .filter(p => !!p)
             .map(s => s.replace(/\./g, '-'))
             .join('.');
     }
 
     private traitGetters: Specs.TraitGetter[] = [];
-    getTraits(spec: Specs.Spec, server: Specs.Server): Specs.Trait[] {
-        return this.traitGetters
-            .map(getTrait => getTrait(spec, server))
-            .reduce((previousTraits, currentTraits) => previousTraits.concat(currentTraits), []);
+    getTraits(spec: Specs.Spec, server: Specs.Server): Specs.Trait[]{
+        spec.traits = [];
+        this.traitGetters.forEach(getTrait => spec.traits = getTrait(spec, server));
+        return spec.traits;
     }
 } 
 

@@ -1,0 +1,11 @@
+{
+  "name": "JsTestAdapter-tools",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "semver": "^4.3.1",
+    "yargs": "^3.5.4"
+  },
+  "dependencies": {
+  }
+}

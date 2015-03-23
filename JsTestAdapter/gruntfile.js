@@ -149,6 +149,18 @@ module.exports = function (grunt) {
         })
     });
 
+    grunt.registerTask('Slam', function () {
+        var range = new semver.Range('^0.6.0');
+        range.set.forEach(function (comps) {
+            comps.forEach(function (comp) {
+                grunt.log.writeln(util.inspect(comp, { depth: null }));
+                grunt.log.writeln(util.inspect(comp.operator, { depth: null }));
+                grunt.log.writeln(util.inspect(comp.semver, { depth: null }));
+            });
+        });
+        grunt.log.writeln(util.inspect(range.set, { depth: null }));
+    });
+
     grunt.registerTask('Bump-patch-version', ['writeJson:bumpPatch', 'writeJson:resetBuild']);
     grunt.registerTask('Bump-minor-version', ['writeJson:bumpMinor', 'writeJson:resetBuild']);
     grunt.registerTask('Bump-major-version', ['writeJson:bumpMajor', 'writeJson:resetBuild']);

@@ -45,7 +45,7 @@ namespace JsTestAdapter.TestAdapter
                 ProjectListener.FileRenamed += (source, e) => OnProjectFileRenamed(e.Project, e.OldFile, e.NewFile);
                 ProjectListener.StartListening();
 
-                Logger.Info("TestContainerDiscoverer created");
+                Logger.Debug("TestContainerDiscoverer created");
             }
             catch (Exception ex)
             {
@@ -126,14 +126,14 @@ namespace JsTestAdapter.TestAdapter
 
         private void OnSolutionLoaded(object sender, EventArgs e)
         {
-            Logger.Info("Solution loaded");
+            Logger.Debug("Solution loaded");
             _initialContainerSearch = true;
             Containers.Clear();
         }
 
         private void OnSolutionUnloaded(object sender, EventArgs e)
         {
-            Logger.Info("Solution unloaded");
+            Logger.Debug("Solution unloaded");
             _initialContainerSearch = true;
             Containers.Clear();
         }
@@ -201,7 +201,7 @@ namespace JsTestAdapter.TestAdapter
                         _shouldRefresh = true;
                         if (!string.IsNullOrWhiteSpace(reason))
                         {
-                            Logger.Info("Refreshing containers: {0}", reason);
+                            Logger.Debug("Refreshing containers: {0}", reason);
                         }
                     }
                 }
@@ -239,8 +239,6 @@ namespace JsTestAdapter.TestAdapter
 
         public IEnumerable<TestContainerSource> FindSources(IVsProject project)
         {
-            Logger.Debug("Finding sources for {0}", project.GetProjectName());
-
             var containers = project.GetProjectItems()
                 .Where(f => TestAdapterInfo.IsTestContainer(f) && File.Exists(f))
                 .Select(f => new { Path = f, Directory = Path.GetDirectoryName(f), Priority = TestAdapterInfo.GetContainerPriority(f) })
@@ -269,7 +267,7 @@ namespace JsTestAdapter.TestAdapter
             if (_disposed) return;
             _disposed = true;
 
-            Logger.Info("Disposing of TestContainerDiscoverer");
+            Logger.Debug("Disposing of TestContainerDiscoverer");
 
             if (disposing)
             {

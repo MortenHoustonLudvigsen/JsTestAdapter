@@ -6,22 +6,22 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "node/node.d.ts": {
-      "commit": "0d211fb28df45f1a079c972f0dc87deab0124994"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     },
     "jasmine/jasmine.d.ts": {
-      "commit": "0d211fb28df45f1a079c972f0dc87deab0124994"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     },
     "source-map/source-map.d.ts": {
-      "commit": "0d211fb28df45f1a079c972f0dc87deab0124994"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     },
     "q/Q.d.ts": {
-      "commit": "0d211fb28df45f1a079c972f0dc87deab0124994"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     },
     "extend/extend.d.ts": {
-      "commit": "0d211fb28df45f1a079c972f0dc87deab0124994"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     },
     "semver/semver.d.ts": {
-      "commit": "32f0a90dab26f70b206407ac24d4d622d0f0f408"
+      "commit": "bba34156c1eaad788fa8996f7d30b54c4fce5ffe"
     }
   }
 }

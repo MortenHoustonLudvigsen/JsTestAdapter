@@ -53,7 +53,7 @@ namespace JsTestAdapter.TestAdapter
             }
             else
             {
-                Logger.Info("TestContainer created");
+                Logger.Debug("TestContainer created");
             }
         }
 

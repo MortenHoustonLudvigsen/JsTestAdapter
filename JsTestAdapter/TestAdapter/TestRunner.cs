@@ -25,17 +25,24 @@ namespace JsTestAdapter.TestAdapter
             var testLogger = TestAdapterInfo.CreateLogger(logger);
             var discoverLogger = new TestLogger(testLogger, "Discover");
             var testSettings = discoveryContext.RunSettings.GetTestSettings(TestAdapterInfo.SettingsName);
+            var count = 0;
+            var testCount = 0;
             foreach (var source in sources)
             {
                 var sourceSettings = GetSourceSettings(source, testSettings);
                 if (sourceSettings != null)
                 {
-                    DiscoverTests(sourceSettings, testLogger, discoverySink).Wait();
+                    testCount += DiscoverTests(sourceSettings, testLogger, discoverySink).Result;
+                    count += 1;
                 }
                 else
                 {
                     discoverLogger.Warn("Could not get settings for {0}", source);
                 }
+            }
+            if (count > 0 || testCount > 0)
+            {
+                discoverLogger.Info("{0} tests discovered in {1} test containers", testCount, count);
             }
         }
 
@@ -53,27 +60,30 @@ namespace JsTestAdapter.TestAdapter
             return sourceSettings;
         }
 
-        private async Task DiscoverTests(TestSourceSettings settings, ITestLogger logger, ITestCaseDiscoverySink discoverySink)
+        private async Task<int> DiscoverTests(TestSourceSettings settings, ITestLogger logger, ITestCaseDiscoverySink discoverySink)
         {
             logger = new TestLogger(logger, settings.Name, "Discover");
+            var count = 0;
             var tests = new ConcurrentBag<Guid>();
             if (settings.Port > 0)
             {
-                logger.Info("Start");
+                logger.Debug("Start");
                 var discoverCommand = new DiscoverCommand(settings.Port);
                 await discoverCommand.Run(spec =>
                 {
                     var testCase = CreateTestCase(settings, spec);
                     tests.Add(testCase.Id);
                     discoverySink.SendTestCase(testCase);
+                    count += 1;
                 });
                 await new RequestRunCommand(settings.Port).Run(tests);
-                logger.Info("Complete");
+                logger.Debug("Complete: {0} tests", count);
             }
             else
             {
                 logger.Error("Not connected to {0}", TestAdapterInfo.Name);
             }
+            return count;
         }
 
         protected virtual TestCase CreateTestCase(TestSourceSettings settings, Spec spec)
@@ -114,18 +124,26 @@ namespace JsTestAdapter.TestAdapter
             var testLogger = TestAdapterInfo.CreateLogger(frameworkHandle);
             var runLogger = new TestLogger(testLogger, "Run");
             var testSettings = runContext.RunSettings.GetTestSettings(TestAdapterInfo.SettingsName);
+            var count = 0;
+            var testCount = 0;
 
             foreach (var source in sources)
             {
                 var sourceSettings = GetSourceSettings(source, testSettings);
                 if (sourceSettings != null)
                 {
-                    RunTests(sourceSettings, testLogger, runContext, frameworkHandle).Wait();
+                    testCount += RunTests(sourceSettings, testLogger, runContext, frameworkHandle).Result;
+                    count += 1;
                 }
                 else
                 {
                     runLogger.Warn("Could not get settings for {0}", source);
                 }
+            }
+
+            if (count > 0 || testCount > 0)
+            {
+                runLogger.Info("{0} tests run in {1} test containers", testCount, count);
             }
         }
 
@@ -134,20 +152,26 @@ namespace JsTestAdapter.TestAdapter
             RunTests(tests.Select(t => t.Source).Distinct(), runContext, frameworkHandle);
         }
 
-        private async Task RunTests(TestSourceSettings settings, ITestLogger logger, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        private async Task<int> RunTests(TestSourceSettings settings, ITestLogger logger, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
             logger = new TestLogger(logger, settings.Name, "Run");
+            var count = 0;
             if (settings.Port > 0)
             {
-                logger.Info("Start");
+                logger.Debug("Start");
                 var discoverCommand = new DiscoverCommand(settings.Port);
-                await discoverCommand.Run(spec => RunTest(settings, logger, runContext, frameworkHandle, spec));
-                logger.Info("Complete");
+                await discoverCommand.Run(spec =>
+                {
+                    RunTest(settings, logger, runContext, frameworkHandle, spec);
+                    count += 1;
+                });
+                logger.Debug("Complete: {0} tests", count);
             }
             else
             {
                 logger.Error("Not connected to {0}", TestAdapterInfo.Name);
             }
+            return count;
         }
 
         private void RunTest(TestSourceSettings settings, ITestLogger logger, IRunContext runContext, IFrameworkHandle frameworkHandle, Spec spec)

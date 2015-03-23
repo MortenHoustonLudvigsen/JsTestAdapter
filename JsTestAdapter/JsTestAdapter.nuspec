@@ -36,7 +36,7 @@
     <file src="bin\NpmProxy.*" target="lib\net45" />
     <file src="TestServer\**" target="Content\TestServer" exclude="TestServer\node_modules\**" />
     <file src="Grunt\**" target="Content\Grunt" exclude="Grunt\node_modules\**" />
-    <file src="Tools\**" target="Tools" />
+    <file src="Tools\**" target="Tools" exclude="Tools\package.json" />
     <file src="..\InstallVsix\InstallVsix\bin\Debug\**" target="Tools\InstallVsix" />
     <file src="tsd.json" target="Tools" />
     <file src="package.json" target="Tools" />

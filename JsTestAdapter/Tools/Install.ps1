@@ -209,29 +209,15 @@ $defaultPackageFile = @"
 
 Write-Host Install npm packages
 
-$packageFile = Join-Path $projectDir "package.json"
-CreateTextFileIfNotExists $packageFile $project.ProjectItems $defaultPackageFile
+$toolsPackageFile = Join-Path $toolsPath "package.json"
+$projectPackageFile = Join-Path $projectDir "package.json"
+CreateTextFileIfNotExists $projectPackageFile $project.ProjectItems $defaultPackageFile
+
+$updatePackageJsonFile = Join-Path $toolsPath "UpdatePackageJson.js"
+node "$updatePackageJsonFile" --toolsPackageFile "$toolsPackageFile" --projectPackageFile "$projectPackageFile"
 
 Push-Location $projectDir
-$packageFile = Join-Path $toolsPath "package.json"
-$package = Get-Content -Raw -Path $packageFile | ConvertFrom-Json
-
-$package.dependencies.psobject.properties | foreach {
-    $module = $_.Name
-    $version = $_.Value
-    $command = "npm install $module --save"
-    Write-Host $command
-    Invoke-Expression $command
-}
-
-$package.devDependencies.psobject.properties | foreach {
-    $module = $_.Name
-    $version = $_.Value
-    $command = "npm install $module --save-dev"
-    Write-Host $command
-    Invoke-Expression $command
-}
-
+npm install
 Pop-Location
 
 ##########################################################
