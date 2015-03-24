@@ -94,7 +94,10 @@ namespace JsTestAdapter.TestAdapter
             {
                 foreach (var trait in spec.Traits)
                 {
-                    testCase.Traits.Add(trait.Name, trait.Value);
+                    if (!string.IsNullOrWhiteSpace(trait.Name))
+                    {
+                        testCase.Traits.Add(trait.Name, trait.Value);
+                    }
                 }
             }
             if (spec.Source != null)
