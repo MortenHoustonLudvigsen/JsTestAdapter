@@ -47,8 +47,8 @@ namespace JsTestAdapter.TestAdapter
 
         public void RemoveDuplicates()
         {
-            var containers = this.ToList();
-            var containersToRemove = containers.Where(c => containers.Any(d => d.IsDuplicate(c))).ToList();
+            var containers = GetContainers();
+            var containersToRemove = GetContainers(c => containers.Any(d => d.IsDuplicate(c)));
 
             foreach (var container in containersToRemove)
             {
@@ -58,7 +58,7 @@ namespace JsTestAdapter.TestAdapter
 
         public void Remove(IVsProject project)
         {
-            var containersToRemove = this.Where(c => c.Project == project).ToList();
+            var containersToRemove = GetContainers(c => c.Project == project);
             foreach (var container in containersToRemove)
             {
                 Remove(container);
@@ -67,7 +67,7 @@ namespace JsTestAdapter.TestAdapter
 
         public void Remove(IEnumerable<string> source)
         {
-            var containersToRemove = this.Where(c => source.Any(s => PathUtils.PathsEqual(c.Source, s))).ToList();
+            var containersToRemove = GetContainers(c => source.Any(s => PathUtils.PathsEqual(c.Source, s)));
             foreach (var container in containersToRemove)
             {
                 Remove(container);
@@ -76,7 +76,7 @@ namespace JsTestAdapter.TestAdapter
 
         public void Remove(string source)
         {
-            var containersToRemove = this.Where(c => PathUtils.PathsEqual(c.Source, source)).ToList();
+            var containersToRemove = GetContainers(c => PathUtils.PathsEqual(c.Source, source));
             foreach (var container in containersToRemove)
             {
                 Remove(container);
@@ -85,25 +85,34 @@ namespace JsTestAdapter.TestAdapter
 
         public void RemoveFromDirectory(string directory)
         {
-            var containersToRemove = this.Where(c => PathUtils.IsInDirectory(c.Source, directory)).ToList();
-            foreach (var container in containersToRemove)
-            {
-                Remove(container);
-            }
+            GetContainers(c => PathUtils.IsInDirectory(c.Source, directory)).ForEach(Remove);
         }
 
         public void Remove(TestContainer container)
         {
-            _containers.Remove(container);
-            container.Dispose();
-            Discoverer.RefreshTestContainers();
+            if (_containers.Remove(container))
+            {
+                container.Dispose();
+                Discoverer.RefreshTestContainers();
+            }
         }
 
         public void Clear()
         {
-            _containers.ToList().ForEach(c => c.Dispose());
+            var containersToDispose = GetContainers();
             _containers.Clear();
+            containersToDispose.ForEach(c => c.Dispose());
             Discoverer.RefreshTestContainers();
+        }
+
+        private List<TestContainer> GetContainers()
+        {
+            return new List<TestContainer>(_containers);
+        }
+
+        private List<TestContainer> GetContainers(Func<TestContainer, bool> predicate)
+        {
+            return new List<TestContainer>(_containers.Where(predicate));
         }
 
         public IEnumerator<TestContainer> GetEnumerator()
