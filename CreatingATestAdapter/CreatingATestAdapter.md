@@ -1,10 +1,8 @@
 ---
 layout: page
-title: Changes
+title: Creating a Visual Studio Test Explorer adapter with JsTestAdapter
 permalink: /CreatingATestAdapter/
 ---
-
-# Creating a Visual Studio Test Explorer adapter with JsTestAdapter
 
 To demonstrate how this library is used I will implement a test adapter for [Jasmine](http://jasmine.github.io/) tests run in [Node.js](https://nodejs.org/).
 
