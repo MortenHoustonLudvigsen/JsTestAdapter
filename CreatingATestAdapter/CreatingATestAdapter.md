@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Creating a Visual Studio Test Explorer adapter with JsTestAdapter
+title: Creating a Visual Studio Test Explorer adapter with JS Test Adapter
 permalink: /CreatingATestAdapter/
 ---
 
