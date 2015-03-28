@@ -4,6 +4,8 @@ title: Creating a Visual Studio Test Explorer adapter with JS Test Adapter
 permalink: /CreatingATestAdapter/
 ---
 
+***This document is under construction!***
+
 To demonstrate how this library is used I will implement a test adapter for [Jasmine](http://jasmine.github.io/) tests run in [Node.js](https://nodejs.org/).
 
 ## Prerequisites
@@ -17,6 +19,13 @@ Before creating a test adapter using JsTestAdapter the following should be insta
 * [Task Runner Explorer](https://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708) - A task runner for Grunt and Gulp directly within Visual Studio 2013.
 
 * [TypeScript 1.4 for Visual Studio 2013](https://visualstudiogallery.msdn.microsoft.com/2d42d8dc-e085-45eb-a30b-3f7d50d55304)
+
+It might also be helpful to install:
+
+* [Grunt CLI](http://gruntjs.com/using-the-cli)
+  ````
+  npm install -g grunt-cli
+  ```` 
 
 ## Set up solution and project
 
@@ -48,7 +57,7 @@ The Task Runner Explorer looks like (it might be necessary to run `nmp install` 
 
 ![](TaskRunnerExplorer1.png)
 
-We can now build the solution, and double click `CreatePackage` in the Task Runner Explorer. If we show all files in the Solution Explorer, we should see that a package `JasmineNodeJsTestAdapter.vsix` has been created:
+I can now build the solution, and double click the `CreatePackage` grunt task in the Task Runner Explorer. If I show all files in the Solution Explorer, I should see that a package `JasmineNodeJsTestAdapter.vsix` has been created:
 
 ![](SolutionAfterBuildAndCreatePackage.png)
 
@@ -126,5 +135,21 @@ A `source.extension.vsixmanifest` file has been generated for us, and looks like
 </PackageManifest>
 ````
 
-We want to 
+I want to fill out `Publisher` attribute of the `Identity` element:
+
+````xml
+    <Identity Id="JasmineNodeJsTestAdapter.532799b3-f8c7-4e18-8571-b32faa93cf81" Version="x.x.x" Language="en-US" Publisher="Morten Houston Ludvigsen" />
+````
+
+Also, I want to fill out the `MoreInfo` and `License` elements:
+
+
+````xml
+    <MoreInfo>https://github.com/MortenHoustonLudvigsen/JasmineNodeJsTestAdapter</MoreInfo>
+    <License>LICENSE</License>
+````
+
+Notice, that I don't change the `Version` attribute of the `Identity` element. This is handled by the `CreatePackage` grunt task.
+
+### Gruntfile.js
 
