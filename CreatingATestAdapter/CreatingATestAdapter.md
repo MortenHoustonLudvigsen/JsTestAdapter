@@ -23,6 +23,7 @@ Before creating a test adapter using JsTestAdapter the following should be insta
 It might also be helpful to install:
 
 * [Grunt CLI](http://gruntjs.com/using-the-cli)
+
   ````
   npm install -g grunt-cli
   ```` 
