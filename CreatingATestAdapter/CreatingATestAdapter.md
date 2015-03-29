@@ -205,8 +205,10 @@ module.exports = function (grunt) {
 
 npm install jasmine --save-dev
 npm install glob --save-dev
+npm install gaze --save-dev
 npm install log4js --save-dev
 
 tsd query glob --action install --save
 tsd query log4js --action install --save
+
 
