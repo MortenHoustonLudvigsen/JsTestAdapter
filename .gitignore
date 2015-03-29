@@ -195,3 +195,4 @@ FakesAssemblies/
 /Test
 /karma-vs-reporter
 *.vsix
+*.nupkg

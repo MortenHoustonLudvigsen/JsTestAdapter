@@ -204,11 +204,12 @@ module.exports = function (grunt) {
 
 
 npm install jasmine --save-dev
-npm install glob --save-dev
-npm install gaze --save-dev
-npm install log4js --save-dev
+npm install glob --save
+npm install gaze --save
+npm install log4js --save
 
 tsd query glob --action install --save
 tsd query log4js --action install --save
-
+tsd query express --action install --save
+tsd query minimatch --action install --save
 
