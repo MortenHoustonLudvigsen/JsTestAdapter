@@ -68,6 +68,14 @@ To automate the creation of the package we bind the `CreatePackage` task to the 
 
 From now on the package `JasmineNodeJsTestAdapter.vsix` will be created after every build.
 
+### Solution level files
+
+To keep track of solution level files, I create a new solution folder `Solution Files`, and add the files in the solution directory: 
+
+![](SolutionAfterAddSolutionFiles.png)
+
+Notice, that I have created a `LICENSE` file with the MIT License.
+
 ### package.json
 
 A `package.json` file has been generated for us, and looks like:
@@ -153,4 +161,52 @@ Also, I want to fill out the `MoreInfo` and `License` elements:
 Notice, that I don't change the `Version` attribute of the `Identity` element. This is handled by the `CreatePackage` grunt task.
 
 ### Gruntfile.js
+
+I will be creating a node program to run Jasmine tests in a new directory: `JasmineTestServer`, and I will be a solution with test projects under a new directory `TestProjects` in the main solution directory. Therefore I change `Gruntfile.js` accordingly:
+
+````JavaScript
+var jsTestAdapter = require('./Grunt/Index');
+
+module.exports = function (grunt) {
+    grunt.initConfig({
+    });
+
+    jsTestAdapter.config(grunt, {
+        name: 'JasmineNodeJsTestAdapter',
+        lib: 'JasmineTestServer',
+        bin: 'bin',
+        rootSuffix: 'JasmineNodeJsTestAdapter',
+        testProject: '../TestProjects/TestProjects.sln'
+    });
+
+    grunt.registerTask('CreatePackage', [
+        'clean:JsTestAdapter',
+        'copy:JsTestAdapter',
+        'JsTestAdapter-flatten-packages',
+        'xmlpoke:JsTestAdapter-vsix',
+        'JsTestAdapter-CreateContentTypes',
+        'compress:JsTestAdapter'
+    ]);
+
+    grunt.registerTask('ResetVS', [
+        'JsTestAdapter-ResetVisualStudio'
+    ]);
+
+    grunt.registerTask('RunVS', [
+        'JsTestAdapter-ResetVisualStudio',
+        'JsTestAdapter-RunVisualStudio'
+    ]);
+
+    grunt.registerTask('default', ['CreatePackage']);
+}
+````
+
+
+
+npm install jasmine --save-dev
+npm install glob --save-dev
+npm install log4js --save-dev
+
+tsd query glob --action install --save
+tsd query log4js --action install --save
 
