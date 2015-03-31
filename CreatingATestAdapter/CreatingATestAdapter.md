@@ -271,12 +271,12 @@ describe('Adder',() => {
 
         // This spec should succeed:
         describe('(3, 6)',() => {
-            it('should return 9',() => expect(Adder.add(3, 6)).toEqual(6));
+            it('should return 9',() => expect(Adder.add(3, 6)).toEqual(9));
         });
 
         // This spec should fail:
         describe('(3, 7)',() => {
-            it('should return 9',() => expect(Adder.add(3, 7)).toEqual(6));
+            it('should return 9',() => expect(Adder.add(3, 7)).toEqual(9));
         });
     });
 });
