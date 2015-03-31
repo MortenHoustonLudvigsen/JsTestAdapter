@@ -10,7 +10,7 @@ To demonstrate how this library is used I will implement a test adapter for [Jas
 
 The test adapter will be found on GitHub: [JasmineNodeTestAdapter](https://github.com/MortenHoustonLudvigsen/JasmineNodeTestAdapter).
 
-## Prerequisites
+# Prerequisites
 
 Before creating a test adapter using JsTestAdapter the following should be installed:
 
@@ -38,7 +38,7 @@ It might also be helpful to install:
 
 * Visual Studio extension [File Nesting](https://visualstudiogallery.msdn.microsoft.com/3ebde8fb-26d8-4374-a0eb-1e4e2665070c)
 
-## Set up solution and project
+# Set up solution and project
 
 Create a new "HTML Application with TypeScript" in Visual Studio 2013 called "JasmineNodeJsTestAdapter" (make sure to check `Create directory for solution`).
 
@@ -78,7 +78,7 @@ To automate the creation of the package we bind the `CreatePackage` task to the 
 
 From now on the package `JasmineNodeJsTestAdapter.vsix` will be created after every build.
 
-### Solution level files
+## Solution level files
 
 To keep track of solution level files, I create a new solution folder `Solution Files`, and add the files in the solution directory: 
 
@@ -86,7 +86,7 @@ To keep track of solution level files, I create a new solution folder `Solution 
 
 Notice, that I have created a `LICENSE` file with the MIT License.
 
-### package.json
+## package.json
 
 A `package.json` file has been generated, and looks like:
 
@@ -125,7 +125,7 @@ A `package.json` file has been generated, and looks like:
 
 The version of the package `JasmineNodeJsTestAdapter.vsix` is generated from the `version` property in `package.json` when the `CreatePackage` task is run, so this is where the current version of the package is maintained.
 
-### source.extension.vsixmanifest
+## source.extension.vsixmanifest
 
 A `source.extension.vsixmanifest` file has been generated, and looks like:
 
@@ -171,7 +171,7 @@ Also, I want to fill out the `MoreInfo` and `License` elements:
 
 Notice, that I don't change the `Version` attribute of the `Identity` element. This is handled by the `CreatePackage` grunt task.
 
-### Gruntfile.js
+## Gruntfile.js
 
 I will be creating a node program to run Jasmine tests in a new directory: `JasmineTestServer`, and I will be a solution with test projects under a new directory `TestProjects` in the main solution directory. Therefore I change `Gruntfile.js` accordingly:
 
@@ -212,7 +212,7 @@ module.exports = function (grunt) {
 }
 ````
 
-## Test Projects
+# Test Projects
 
 Before I start implementing the test adapter, I want to make a simple test project.
 
