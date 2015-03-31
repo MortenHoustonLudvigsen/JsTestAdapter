@@ -288,16 +288,31 @@ My test project now looks like:
 
 Notice, that I have used [File Nesting](https://visualstudiogallery.msdn.microsoft.com/3ebde8fb-26d8-4374-a0eb-1e4e2665070c) to nest the `.js` and `.js.map` files produced by the TypeScript compiler under the corresponding `.ts` file.
 
+# Testing the test adapter
+
+I can now start experimental instance of Visual Studio with the the latest build of the test adapter installed by double clicking the `RunVS` task in the Task Runner Explorer. The first time I do this, I am asked for my credentials in Visual Studio.
+
+Visual Studio opens with the test project loaded (as set up in `Gruntfile.js`), and I can open the Test Explorer to see test results. Of course, until I have implemented the adapter, nothing is shown in the Test Explorer.  
+
+***For this to work [Microsoft Visual Studio 2013 SDK](https://visualstudiogallery.msdn.microsoft.com/842766ba-1f32-40cf-8617-39365ebfc134) needs to be installed first.***
 
 
+
+# Notes (this will disappear when the document is finished)
 
 npm install jasmine --save-dev
+
 npm install glob --save
+
 npm install gaze --save
+
 npm install log4js --save
 
 tsd query glob --action install --save
+
 tsd query log4js --action install --save
+
 tsd query express --action install --save
+
 tsd query minimatch --action install --save
 
