@@ -173,7 +173,7 @@ Notice, that I don't change the `Version` attribute of the `Identity` element. T
 
 ## Gruntfile.js
 
-I will be creating a node program to run Jasmine tests in a new directory: `JasmineTestServer`, and I will be a solution with test projects under a new directory `TestProjects` in the main solution directory. Therefore I change `Gruntfile.js` accordingly:
+I will be creating a node program to run Jasmine tests in a new directory: `JasmineTestServer`, and I will be creating a solution with test projects under a new directory `TestProjects` in the main solution directory. Therefore I change `Gruntfile.js` accordingly:
 
 ````JavaScript
 var jsTestAdapter = require('./Grunt/Index');
