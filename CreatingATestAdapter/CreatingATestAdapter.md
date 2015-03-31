@@ -18,17 +18,25 @@ Before creating a test adapter using JsTestAdapter the following should be insta
 
 * [Microsoft Visual Studio 2013 SDK](https://visualstudiogallery.msdn.microsoft.com/842766ba-1f32-40cf-8617-39365ebfc134)
 
-* [Task Runner Explorer](https://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708) - A task runner for Grunt and Gulp directly within Visual Studio 2013.
+* Visual Studio extension [Task Runner Explorer](https://visualstudiogallery.msdn.microsoft.com/8e1b4368-4afb-467a-bc13-9650572db708)
 
-* [TypeScript 1.4 for Visual Studio 2013](https://visualstudiogallery.msdn.microsoft.com/2d42d8dc-e085-45eb-a30b-3f7d50d55304)
+* Visual Studio extension [TypeScript 1.4 for Visual Studio 2013](https://visualstudiogallery.msdn.microsoft.com/2d42d8dc-e085-45eb-a30b-3f7d50d55304)
 
 It might also be helpful to install:
 
-* [Grunt CLI](http://gruntjs.com/using-the-cli)
+* Node module [Grunt CLI](http://gruntjs.com/using-the-cli)
 
   ````
   npm install -g grunt-cli
   ```` 
+
+* Node module [tsd](https://www.npmjs.com/package/tsd)
+
+  ````
+  npm install -g tsd
+  ````
+
+* Visual Studio extension [File Nesting](https://visualstudiogallery.msdn.microsoft.com/3ebde8fb-26d8-4374-a0eb-1e4e2665070c)
 
 ## Set up solution and project
 
@@ -40,7 +48,7 @@ Once this is done, the solution explorer should look something like this:
 
 ![](SolutionAfterCreate.png)
 
-Delete alle the files, that are added by default:
+Delete all the files, that are added by default:
 
 ![](SolutionAfterDeleteDefaultFiles.png)
 
@@ -84,7 +92,7 @@ A `package.json` file has been generated, and looks like:
 
 ````Json
 {
-  "name": "JasmineNodeJsTestAdapter",
+  "name": "JasmineNodeTestAdapter",
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
@@ -125,9 +133,9 @@ A `source.extension.vsixmanifest` file has been generated, and looks like:
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
-    <Identity Id="JasmineNodeJsTestAdapter.532799b3-f8c7-4e18-8571-b32faa93cf81" Version="x.x.x" Language="en-US" Publisher="" />
-    <DisplayName>JasmineNodeJsTestAdapter</DisplayName>
-    <Description xml:space="preserve">JasmineNodeJsTestAdapter</Description>
+    <Identity Id="JasmineNodeTestAdapter.25d980f5-bb63-4cae-8dd4-b165922e9c98" Version="x.x.x" Language="en-US" Publisher="" />
+    <DisplayName>JasmineNodeTestAdapter</DisplayName>
+    <Description xml:space="preserve">JasmineNodeTestAdapter</Description>
     <MoreInfo></MoreInfo>
     <License></License>
   </Metadata>
@@ -140,24 +148,25 @@ A `source.extension.vsixmanifest` file has been generated, and looks like:
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
   </Dependencies>
   <Assets>
-    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="JasmineNodeJsTestAdapter.dll" />
-    <Asset Type="UnitTestExtension" Path="JasmineNodeJsTestAdapter.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="JasmineNodeTestAdapter.dll" />
+    <Asset Type="UnitTestExtension" Path="JasmineNodeTestAdapter.dll" />
   </Assets>
 </PackageManifest>
+
 ````
 
 I want to fill out `Publisher` attribute of the `Identity` element:
 
 ````xml
-    <Identity Id="JasmineNodeJsTestAdapter.532799b3-f8c7-4e18-8571-b32faa93cf81" Version="x.x.x" Language="en-US" Publisher="Morten Houston Ludvigsen" />
+<Identity Id="JasmineNodeTestAdapter.25d980f5-bb63-4cae-8dd4-b165922e9c98" Version="x.x.x" Language="en-US" Publisher="Morten Houston Ludvigsen" />
 ````
 
 Also, I want to fill out the `MoreInfo` and `License` elements:
 
 
 ````xml
-    <MoreInfo>https://github.com/MortenHoustonLudvigsen/JasmineNodeJsTestAdapter</MoreInfo>
-    <License>LICENSE</License>
+<MoreInfo>https://github.com/MortenHoustonLudvigsen/JasmineNodeTestAdapter</MoreInfo>
+<License>LICENSE</License>
 ````
 
 Notice, that I don't change the `Version` attribute of the `Identity` element. This is handled by the `CreatePackage` grunt task.
@@ -174,10 +183,10 @@ module.exports = function (grunt) {
     });
 
     jsTestAdapter.config(grunt, {
-        name: 'JasmineNodeJsTestAdapter',
+        name: 'JasmineNodeTestAdapter',
         lib: 'JasmineTestServer',
         bin: 'bin',
-        rootSuffix: 'JasmineNodeJsTestAdapter',
+        rootSuffix: 'JasmineNodeTestAdapter',
         testProject: '../TestProjects/TestProjects.sln'
     });
 
@@ -202,6 +211,83 @@ module.exports = function (grunt) {
     grunt.registerTask('default', ['CreatePackage']);
 }
 ````
+
+## Test Projects
+
+Before I start implementing the test adapter, I want to make a simple test project.
+
+In the main solution directory I create a new empty solution named "TestProjects": 
+
+![](CreateTestProjectsSolution.png)
+
+I like working in TypeScript, so I will use it to implement tests. This will also demonstrate that source mapping works.
+
+In the test solution I create a new "HTML Application with TypeScript" named "TypescriptTests" (as before, I delete all the files, that are added by default):
+
+![](CreateTypescriptTestsProject.png)
+
+I also configure TypeScript to use CommonJS modules:
+
+![](ConfigureTypescriptInTestProject.png)
+
+I add a `package.json` file to track node modules:
+
+````JSON
+{
+    "name": "TypescriptTests",
+    "version": "0.0.0",
+    "private": true
+}
+````
+
+I need the TypeScript definitions for Jasmine, so I jump to a command prompt and run:
+
+````
+cd C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests 
+tsd query jasmine --action install --save
+```` 
+
+I include the generated files in the test project.
+
+To have something to test, I add a TypeScript file `Adder.ts` in new folder `src`:
+
+````JavaScript
+export function add(a: number, b: number): number {
+    return a + b;
+}
+````
+
+I want a handfull of Jasmine tests, so I create TypeScript file `AdderSpec.ts` in new folder `specs`:
+
+````JavaScript
+import Adder = require('../src/Adder');
+
+describe('Adder',() => {
+    describe('add',() => {
+        // This spec should succeed:
+        describe('(3, 3)',() => {
+            it('should return 6',() => expect(Adder.add(3, 3)).toEqual(6));
+        });
+
+        // This spec should succeed:
+        describe('(3, 6)',() => {
+            it('should return 9',() => expect(Adder.add(3, 6)).toEqual(6));
+        });
+
+        // This spec should fail:
+        describe('(3, 7)',() => {
+            it('should return 9',() => expect(Adder.add(3, 7)).toEqual(6));
+        });
+    });
+});
+````
+
+My test project now looks like:
+
+![](FinishedTestProject.png)
+
+Notice, that I have used [File Nesting](https://visualstudiogallery.msdn.microsoft.com/3ebde8fb-26d8-4374-a0eb-1e4e2665070c) to nest the `.js` and `.js.map` files produced by the TypeScript compiler under the corresponding `.ts` file.
+
 
 
 
