@@ -213,9 +213,8 @@ $toolsPackageFile = Join-Path $toolsPath "package.json"
 $projectPackageFile = Join-Path $projectDir "package.json"
 CreateTextFileIfNotExists $projectPackageFile $project.ProjectItems $defaultPackageFile
 
-Push-Location $projectDir
-npm install semver
-npm install yargs
+Push-Location $toolsPath
+npm install
 Pop-Location
 
 $updatePackageJsonFile = Join-Path $toolsPath "UpdatePackageJson.js"
