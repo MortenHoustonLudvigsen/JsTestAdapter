@@ -8,6 +8,8 @@ permalink: /CreatingATestAdapter/
 
 To demonstrate how this library is used I will implement a test adapter for [Jasmine](http://jasmine.github.io/) tests run in [Node.js](https://nodejs.org/).
 
+The test adapter will be found on GitHub: [JasmineNodeTestAdapter](https://github.com/MortenHoustonLudvigsen/JasmineNodeTestAdapter).
+
 ## Prerequisites
 
 Before creating a test adapter using JsTestAdapter the following should be installed:
@@ -54,9 +56,9 @@ Once JsTestAdapter is installed the solution should look something like this:
 
 ![](SolutionAfterInstallOfJsTestAdapter.png)
 
-The Task Runner Explorer looks like (it might be necessary to run `nmp install` from a command prompt):
+The Task Runner Explorer looks like (it might be necessary to run `nmp install` from a command prompt, and to click the Refresh button in the Task Runner Explorer):
 
-![](TaskRunnerExplorer1.png)
+![](TaskRunnerExplorerAfterInstallOfJsTestAdapter.png)
 
 I can now build the solution, and double click the `CreatePackage` grunt task in the Task Runner Explorer. If I show all files in the Solution Explorer, I should see that a package `JasmineNodeJsTestAdapter.vsix` has been created:
 
@@ -78,7 +80,7 @@ Notice, that I have created a `LICENSE` file with the MIT License.
 
 ### package.json
 
-A `package.json` file has been generated for us, and looks like:
+A `package.json` file has been generated, and looks like:
 
 ````Json
 {
@@ -117,7 +119,7 @@ The version of the package `JasmineNodeJsTestAdapter.vsix` is generated from the
 
 ### source.extension.vsixmanifest
 
-A `source.extension.vsixmanifest` file has been generated for us, and looks like:
+A `source.extension.vsixmanifest` file has been generated, and looks like:
 
 ````xml
 <?xml version="1.0" encoding="utf-8"?>
