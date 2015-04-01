@@ -332,7 +332,20 @@ The source code for the Jasmine runner and the test server will reside in new fo
 
 ## JasmineLogger.ts
 
-I will want to be able to log information in both the Jasmine runner and the test server. So I will install [log4js](https://www.npmjs.com/package/log4js) from a command prompt:
+JsTestAdapter defines an interface `Logger` (in `TestServer/Logger.ts`):
+
+````JavaScript
+interface Logger {
+    info(message: string, ...args: any[]): void;
+    warn(message: string, ...args: any[]): void;
+    error(message: string, ...args: any[]): void;
+    debug(message: string, ...args: any[]): void;
+}
+````
+
+Objects implementing this interface will be needed in both the Jasmine runner and the test server.
+  
+A [log4js](https://www.npmjs.com/package/log4js) logger implements the `Logger` interface, so I will install it from a command prompt:
 
 ````
 cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
@@ -347,20 +360,9 @@ tsd query log4js --action install --save
 tsd query express --action install --save
 ````
 
-This will add files to the `typings` folder, which I include in the project.
+This adds files to the `typings` folder, which I include in the project.
 
-JsTestAdapter defines an interface `Logger` (in `TestServer/Logger.ts`):
-
-````JavaScript
-interface Logger {
-    info(message: string, ...args: any[]): void;
-    warn(message: string, ...args: any[]): void;
-    error(message: string, ...args: any[]): void;
-    debug(message: string, ...args: any[]): void;
-}
-````
-
-I need to implement a function, that returns a `Logger` object given a category. So I create `JasmineLogger.ts` (in the `JasmineTestServer` folder):
+Now I can implement a function, that returns a `Logger` object given a category. I create `JasmineLogger.ts` (in the `JasmineTestServer` folder):
 
 ````JavaScript
 import log4js = require('log4js');
