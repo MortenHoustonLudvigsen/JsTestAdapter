@@ -97,6 +97,7 @@ These are the possible properties (all properties are optional):
 * `LogDirectory` Where the log file should be saved (if LogToFile is true). If this property is not specified the directory in which JasmineNodeTestAdapter.json resides is used.
 
 `JasmineNodeTestAdapter.json` must be encoded in one of the following encodings:
+
 * UTF-8
 * UTF-8 with BOM / Signature
 * UTF-16 Big-Endian with BOM / Signature
