@@ -43,7 +43,6 @@
 
     var get_level = function(ele) { return parseInt(ele.nodeName.replace("H", ""), 10); }
     var highest_level = headers.map(function(_, ele) { return get_level(ele); }).get().sort()[0];
-    var return_to_top = '<i class="icon-arrow-up back-to-top"> </i>';
 
     var level = get_level(headers[0]),
       this_level,
@@ -55,9 +54,11 @@
     })
     .addClass('clickable-header')
     .each(function(_, header) {
+      var return_to_top;
       this_level = get_level(header);
-      if (!settings.noBackToTopLinks && this_level === highest_level) {
-        $(header).addClass('top-level-header').after(return_to_top);
+      if (!settings.noBackToTopLinks) {
+        return_to_top = '<span class="icon-arrow-up back-to-top level-' + this_level + '"></span>';
+        $(header).addClass('top-level-header').before(return_to_top);
       }
       if (this_level === level) // same level as before; same indenting
         html += "<li><a href='#" + fixedEncodeURIComponent(header.id) + "'>" + header.innerHTML + "</a>";

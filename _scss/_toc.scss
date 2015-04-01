@@ -7,7 +7,7 @@
 }
 
 .top-level-header {
-  display:inline;
+  display:inline-block;
 }
 
 .back-to-top {
@@ -15,10 +15,31 @@
   cursor:pointer;
 }
 
+#toc ul {
+  list-style-type: none;
+}
+
+#toc > ul {
+  padding-left: 2px;
+}
+
 .icon-arrow-up {
+    display:inline-block;
 	width: 0; 
 	height: 0; 
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-bottom: 5px solid black;
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-bottom: 12px solid gray;
+    margin-bottom: 3px;
+    margin-left: -16px;
+    margin-right: 4px;
 }
+
+.icon-arrow-up.level-1 {
+    margin-bottom: 3px;
+}
+
+.icon-arrow-up.level-2 {
+    margin-bottom: 1px;
+}
+
