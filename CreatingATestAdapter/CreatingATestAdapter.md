@@ -243,7 +243,7 @@ I also configure TypeScript to use CommonJS modules:
 
 ![](ConfigureTypescriptInTestProject.png)
 
-I add a `package.json` file to track node modules:
+I add a `package.json` file to track node modules (I make sure that it is saved as UTF-8 without signature - otherwise npm will not be able to update it):
 
 ````JSON
 {
@@ -253,14 +253,21 @@ I add a `package.json` file to track node modules:
 }
 ````
 
-I need the TypeScript definitions for Jasmine, so I jump to a command prompt and run:
+I need to install Jasmine, so I jump to a command prompt and run:
+
+````
+cd C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests 
+npm install jasmine --save-dev
+```` 
+
+I also need the TypeScript definitions for Jasmine:
 
 ````
 cd C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests 
 tsd query jasmine --action install --save
 ```` 
 
-I include the generated files in the test project.
+I include the generated files in the test project (not `node_modules`).
 
 To have something to test, I add a TypeScript file `Adder.ts` in new folder `src`:
 
@@ -270,7 +277,7 @@ export function add(a: number, b: number): number {
 }
 ````
 
-I want a handfull of Jasmine tests, so I create TypeScript file `AdderSpec.ts` in new folder `specs`:
+I want a handful of Jasmine tests, so I create TypeScript file `AdderSpec.ts` in new folder `specs`:
 
 ````JavaScript
 import Adder = require('../src/Adder');
@@ -389,19 +396,11 @@ export = JasmineLogger;
 
 # Notes (this will disappear when the document is finished)
 
-npm install jasmine --save-dev
-
 npm install glob --save
 
 npm install gaze --save
 
-npm install log4js --save
-
 tsd query glob --action install --save
-
-tsd query log4js --action install --save
-
-tsd query express --action install --save
 
 tsd query minimatch --action install --save
 
