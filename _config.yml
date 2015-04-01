@@ -51,6 +51,9 @@ baseurl: "/JsTestAdapter"
 #
 
 markdown: redcarpet
+redcarpet:
+    extensions: [with_toc_data]
+
 highlighter: pygments
 permalink: /:title/
 
