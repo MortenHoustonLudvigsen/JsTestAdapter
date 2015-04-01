@@ -38,6 +38,19 @@ It might also be helpful to install:
 
 * Visual Studio extension [File Nesting](https://visualstudiogallery.msdn.microsoft.com/3ebde8fb-26d8-4374-a0eb-1e4e2665070c)
 
+# Architecture
+
+The test adapter will be made up of three components:
+
+* The Jasmine runner
+  This will be a node program, that runs a set of Jasmine tests once, and reports the results to the test server. 
+
+* The test server
+  This will be a node program, that runs in the background running the Jasmine runner when needed, and reporting the results to the test adapter.
+
+* The test adapter
+  This will be the Test Explorer adapter, implementet in C#, that will start a test server for each set of tests, and will respond to events from the test servers by updating the Test Explorer.   
+
 # Set up solution and project
 
 Create a new "HTML Application with TypeScript" in Visual Studio 2013 called "JasmineNodeJsTestAdapter" (make sure to check `Create directory for solution`).
@@ -295,8 +308,6 @@ I can now start an experimental instance of Visual Studio with the the latest bu
 Visual Studio opens with the test project loaded (as set up in `Gruntfile.js`), and I can open the Test Explorer to see test results. Of course, until I have implemented the adapter, nothing is shown in the Test Explorer.  
 
 ***For this to work [Microsoft Visual Studio 2013 SDK](https://visualstudiogallery.msdn.microsoft.com/842766ba-1f32-40cf-8617-39365ebfc134) needs to be installed first.***
-
-
 
 # Notes (this will disappear when the document is finished)
 
