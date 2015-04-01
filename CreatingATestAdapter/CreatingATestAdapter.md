@@ -88,7 +88,7 @@ These are the possible properties (all properties are optional):
 
 * `Traits` An array of traits to be attached to each test. A trait can be a string or an object containing properties `Name` and `Value`. A trait specified as a string or with only a name will be shown in the Test Explorer as just the string or name.
 
-* `Extensions` Path to a node.js module implementing extensions. See below.
+* `Extensions` Path to a node.js module implementing extensions.
 
 * `Disabled` Set to true, if the test adapter should be disabled for this configuration file.
 
