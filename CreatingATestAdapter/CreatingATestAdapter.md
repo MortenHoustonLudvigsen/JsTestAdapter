@@ -53,7 +53,7 @@ The test adapter will be made up of three components:
 
 ## Configuration
 
-The test adapter will be configured using a JSON file named `JasmineNodeTestAdapter`.
+The test adapter will be configured using a JSON file named `JasmineNodeTestAdapter.json`.
 
 ````JSON
 {
