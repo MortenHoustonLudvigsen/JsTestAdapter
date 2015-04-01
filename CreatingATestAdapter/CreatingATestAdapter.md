@@ -309,6 +309,21 @@ Visual Studio opens with the test project loaded (as set up in `Gruntfile.js`), 
 
 ***For this to work [Microsoft Visual Studio 2013 SDK](https://visualstudiogallery.msdn.microsoft.com/842766ba-1f32-40cf-8617-39365ebfc134) needs to be installed first.***
 
+It is also possible to start the experimental instance of Visual Studio from the debugger. This can be set up in the project properties:
+
+![](ConfigureDebug.png)
+
+However, for this to work properly, the project needs to be built, and then the `ResetVS` task in the Task Runner Explorer needs to be run. All this *before* starting a debug session.
+
+The reason for this is that the debug session starts *before* the `CreatePackage` task is finished running. Otherwise the `ResetVS` task could be a part of the `CreatePackage` task. As far as I can tell this has been fixed in Visual Studio 2015 CTP, where the debugger waits for the Task Runner Explorer to finish before starting. In this case one could create a task `AfterBuild` in `Gruntfile.js`, and bind that to the `After Build` event in the Task Runner Explorer, instead of `CreatePackage`:
+
+````JavaScript
+grunt.registerTask('AfterBuild', [
+    'CreatePackage',
+    'ResetVS'
+]);
+````
+
 # Notes (this will disappear when the document is finished)
 
 npm install jasmine --save-dev
