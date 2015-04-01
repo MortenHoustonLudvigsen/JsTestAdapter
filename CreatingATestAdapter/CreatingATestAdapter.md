@@ -324,6 +324,67 @@ grunt.registerTask('AfterBuild', [
 ]);
 ````
 
+# The Jasmine runner
+
+Now I am ready to implement the test adapter. I will start with the Jasmine runner. As mentioned earlier, this will be a node program, that runs a set of Jasmine tests once, and reports the results to the test server.
+
+The source code for the Jasmine runner and the test server will reside in new folder `JasmineTestServer` in the project.
+
+## JasmineLogger.ts
+
+I will want to be able to log information in both the Jasmine runner and the test server. So I will install [log4js](https://www.npmjs.com/package/log4js) from a command prompt:
+
+````
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
+npm install log4js --save
+````
+
+I also want the TypeScript definitions for [log4js](https://www.npmjs.com/package/log4js) (which depend on definitions for [express](https://www.npmjs.com/package/express)):
+
+````
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
+tsd query log4js --action install --save
+tsd query express --action install --save
+````
+
+This will add files to the `typings` folder, which I include in the project.
+
+JsTestAdapter defines an interface `Logger` (in `TestServer/Logger.ts`):
+
+````JavaScript
+interface Logger {
+    info(message: string, ...args: any[]): void;
+    warn(message: string, ...args: any[]): void;
+    error(message: string, ...args: any[]): void;
+    debug(message: string, ...args: any[]): void;
+}
+````
+
+I need to implement a function, that returns a `Logger` object given a category. So I create `JasmineLogger.ts` (in the `JasmineTestServer` folder):
+
+````JavaScript
+import log4js = require('log4js');
+import Logger = require('../TestServer/Logger');
+
+log4js.configure({
+    appenders: [
+        {
+            type: 'console',
+            layout: {
+                type: 'pattern',
+                pattern: '%p [%c]: %m'
+            }
+        }
+    ]
+});
+
+function JasmineLogger(category: string): Logger {
+    return log4js.getLogger(category);
+}
+
+export = JasmineLogger;
+````
+
 # Notes (this will disappear when the document is finished)
 
 npm install jasmine --save-dev
