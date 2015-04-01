@@ -49,7 +49,58 @@ The test adapter will be made up of three components:
   This will be a node program, that runs in the background running the Jasmine runner when needed, and reporting the results to the test adapter.
 
 * The test adapter
-  This will be the Test Explorer adapter, implementet in C#, that will start a test server for each set of tests, and will respond to events from the test servers by updating the Test Explorer.   
+  This will be the Test Explorer adapter, implementet in C#, that will start a test server for each set of tests, and will respond to events from the test servers by updating the Test Explorer.
+
+## Configuration
+
+The test adapter will be configured using a JSON file named `JasmineNodeTestAdapter`.
+
+````JSON
+{
+    "$schema": "http://MortenHoustonLudvigsen.github.io/JasmineNodeTestAdapter/JasmineNodeTestAdapter.schema.json",
+    "Name": "My tests",
+    "BasePath": ".",
+    "Helpers": [ "specs/**/*[Hh]elper.js" ],
+    "Specs": [ "specs/**/*[Ss]pec.js" ],
+    "Watch": [ "src/**/*.js" ],
+    "Extensions": "./Extensions",
+    "Traits": [ "Jasmine", { "Name": "Foo", "Value": "Bar" } ],
+    "Disabled": false,
+    "LogToFile": true,
+    "LogDirectory": "TestResults/JasmineTestAdapter"
+}
+````   
+
+These are the possible properties (all properties are optional):
+
+* `$schema` Set to "<http://MortenHoustonLudvigsen.github.io/JasmineNodeTestAdapter/JasmineNodeTestAdapter.schema.json>" to get
+  intellisense for `JasmineNodeTestAdapter.json`.
+
+* `Name` The name of the test container. Used in the default generation of the fully qualified name for each test.
+
+* `BasePath` The base path to use to resolve file paths. Defaults to the directory in which `JasmineNodeTestAdapter.json` resides.
+
+* `Helpers` Non-source, non-spec helper files. Loaded before any specs. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).
+
+* `Specs` Files containing Jasmine specs. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).
+
+* `Watch` A test run is triggered if any file specified in `Helpers` or `Specs` change. Add any files in `Watch` that should also trigger a test run when they change. These will typically be the source files. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).
+
+* `Traits` An array of traits to be attached to each test. A trait can be a string or an object containing properties `Name` and `Value`. A trait specified as a string or with only a name will be shown in the Test Explorer as just the string or name.
+
+* `Extensions` Path to a node.js module implementing extensions. See below.
+
+* `Disabled` Set to true, if the test adapter should be disabled for this configuration file.
+
+* `LogToFile` Set to true, if you want the adapter to write log statements to a log file (named JasmineNodeTestAdapter.log).
+
+* `LogDirectory` Where the log file should be saved (if LogToFile is true). If this property is not specified the directory in which JasmineNodeTestAdapter.json resides is used.
+
+`JasmineNodeTestAdapter.json` must be encoded in one of the following encodings:
+* UTF-8
+* UTF-8 with BOM / Signature
+* UTF-16 Big-Endian with BOM / Signature
+* UTF-16 Little-Endian with BOM / Signature
 
 # Set up solution and project
 
@@ -331,6 +382,81 @@ grunt.registerTask('AfterBuild', [
 ]);
 ````
 
+# JSON schema for the configuration file
+
+To make it easier to configure the adapter by providing intellisense in Visual Studio, I create a JSON schema called `JasmineNodeTestAdapter.schema.json` in the solution directory, and add it to `Solution Files`:
+
+````JSON
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "JSON schema for JasmineNodeTestAdapter configuration files (JasmineNodeTestAdapter.json)",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "format": "uri"
+        },
+        "Name": {
+            "description": "The name of the test container.",
+            "type": "string"
+        },
+        "BasePath": {
+            "description": "The base path to use to resolve file paths. Defaults to the directory in which JasmineNodeTestAdapter.json resides.",
+            "type": "string"
+        },
+        "Helpers": {
+            "description": "Non-source, non-spec helper files. Loaded before any specs. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "Specs": {
+            "description": "Files containing Jasmine specs. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "Watch": {
+            "description": "A test run is triggered if any file specified in `Helpers` or `Specs` change. Add any files in `Watch` that should also trigger a test run when they change. These will typically be the source files. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).",
+            "type": "array",
+            "items": { "type": "string" }
+        },
+        "Traits": {
+            "description": "Traits to attach to each test.",
+            "type": "array",
+            "items": {
+                "anyOf": [
+                    { "type": "string" },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "Name": { "type": "string" },
+                            "Value": { "type": "string" }
+                        },
+                        "required": [ "Name" ]
+                    }
+                ]
+            }
+        },
+        "Extensions": {
+            "description": "Path to a node.js module implementing extensions.",
+            "type": "string"
+        },
+        "Disabled": {
+            "description": "Set to true, if the test adapter should be disabled for this configuration file.",
+            "type": "boolean"
+        },
+        "LogToFile": {
+            "description": "Set to true, if you want the adapter to write log statements to a log file (named JasmineNodeTestAdapter.log).",
+            "type": "boolean"
+        },
+        "LogDirectory": {
+            "description": "Where the log file should be saved (if LogToFile is true). If this property is not specified the directory in which JasmineNodeTestAdapter.json resides is used.",
+            "type": "string"
+        }
+    }
+}
+```` 
+
 # The Jasmine runner
 
 Now I am ready to implement the test adapter. I will start with the Jasmine runner. As mentioned earlier, this will be a node program, that runs a set of Jasmine tests once, and reports the results to the test server.
@@ -393,6 +519,10 @@ function JasmineLogger(category: string): Logger {
 
 export = JasmineLogger;
 ````
+
+## JasmineRunner.ts
+
+Next, I will implement the Jasmine runner itself.
 
 # Notes (this will disappear when the document is finished)
 
