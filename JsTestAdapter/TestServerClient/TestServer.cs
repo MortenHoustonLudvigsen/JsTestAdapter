@@ -64,12 +64,34 @@ namespace JsTestAdapter.TestServerClient
 
         public ProcessOptions GetProcessOptions()
         {
+            if (string.IsNullOrWhiteSpace(NodePaths.NodeJsPath))
+            {
+                throw new Exception("Could not find node.exe in any of these directories:" + Environment.NewLine
+                    + string.Join(Environment.NewLine, NodePaths.GetInstallPaths().Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => "    " + p)));
+            }
+
+            if (!File.Exists(NodePaths.NodeJsPath))
+            {
+                throw new Exception("Could not find node.exe here: " + NodePaths.NodeJsPath);
+            }
+
+            if (string.IsNullOrWhiteSpace(NodePaths.NpmPath))
+            {
+                throw new Exception("Could not find npm.cmd in any of these directories:" + Environment.NewLine
+                    + string.Join(Environment.NewLine, NodePaths.GetNpmPaths().Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => "    " + p)));
+            }
+
+            if (!File.Exists(NodePaths.NpmPath))
+            {
+                throw new Exception("Could not find npm.cmd here: " + NodePaths.NpmPath);
+            }
+
             if (!File.Exists(StartScript))
             {
                 throw new Exception("Could not find start script for " + Name + " (" + StartScript + ")");
             }
 
-            var options = new ProcessOptions("node")
+            var options = new ProcessOptions(NodePaths.NodeJsPath)
             {
                 WorkingDirectory = WorkingDirectory,
                 StandardOutputEncoding = Encoding.UTF8,

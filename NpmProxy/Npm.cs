@@ -9,8 +9,6 @@ namespace NpmProxy
 {
     public partial class Npm : ProcessRunner
     {
-        private const string _cmdName = "npm.cmd";
-
         private class Options : ProcessRunnerOptions
         {
             public Options(Npm npm)
@@ -44,7 +42,7 @@ namespace NpmProxy
         /// The first file named "npm.cmd" in the system path will be used as the npm cmd file
         /// </summary>
         public Npm()
-            : base(ProcessUtils.FindExecutable(_cmdName))
+            : base(NodePaths.NpmPath)
         {
         }
 

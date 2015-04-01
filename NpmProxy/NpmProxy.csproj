@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\Root.cs" />
+    <Compile Include="NodePaths.cs" />
     <Compile Include="Npm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
