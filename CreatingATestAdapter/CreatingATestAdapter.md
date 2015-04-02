@@ -471,7 +471,7 @@ Now I am ready to implement the test adapter. I will start with the Jasmine runn
 
 The source code for the Jasmine runner and the test server will reside in new folder `JasmineTestServer` in the project.
 
-## JasmineLogger.ts
+## JasmineTestServer/JasmineLogger.ts
 
 JsTestAdapter defines an interface `Logger` (in `TestServer/Logger.ts`):
 
@@ -528,7 +528,7 @@ function JasmineLogger(category: string): Logger {
 export = JasmineLogger;
 ````
 
-## Settings.ts
+## JasmineTestServer/Settings.ts
 
 I will need to read settings from `JasmineNodeTestAdapter.json` configuration files. Therefore i make an interface in `Settings.ts`:
 
@@ -550,7 +550,7 @@ export = Settings;
 
 Note that I import `../TestServer/Specs`, which contains a number of central interfaces defined in JsTestAdapter. Note also that I only define the properties I expect to need in the Jasmine runner and the test server.
 
-## Constants.ts
+## JasmineTestServer/Constants.ts
 
 I want default setting values. I implement this in `Constants.ts`:
 
@@ -567,7 +567,7 @@ export var defaultSettings = <Settings>{
 }; 
 ````
 
-## Utils.ts
+## JasmineTestServer/Utils.ts
 
 It is not enough to define an interface for settings. I also need to be able to read them from a file. I implement this in `Utils.ts`:
 
@@ -603,7 +603,7 @@ Note that I read the settings file using the `TextFile` module from JsTestAdapte
 * UTF-16 Big-Endian with BOM / Signature
 * UTF-16 Little-Endian with BOM / Signature
 
-## JasmineRunner.ts
+## JasmineTestServer/JasmineRunner.ts
 
 Next, I will implement the Jasmine runner itself.
 
@@ -719,7 +719,7 @@ Failures:
 Finished in 0.009 seconds
 ````
 
-## JasmineInstumentation.ts
+## JasmineTestServer/JasmineInstumentation.ts
 
 For the test adapter to be able to link to spec source code, I need to wrap the Jasmine functions `[xf]describe` and `[xf]it` to add a property `source` to the result. This is done in `JasmineInstumentation.ts`: 
 
@@ -779,7 +779,7 @@ JasmineInstumentation.wrapFunctions(jasmine.env);
 ...
 ````
 
-## Timer.ts
+## JasmineTestServer/Timer.ts
 
 I want elapsed time for each spec to be measured in high resolution. So I implement a simple module `Timer.ts`: 
 
@@ -793,7 +793,7 @@ export function now(): number {
 }
 ````
 
-## JasmineReporter.ts
+## JasmineTestServer/JasmineReporter.ts
 
 I can not use the default reporter in Jasmine. I need to implement one, that reports results to a test server (not yet implemented).
 
@@ -1090,7 +1090,7 @@ cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 npm install gaze --save
 ````
 
-## Server.ts
+## JasmineTestServer/Server.ts
 
 I need to implement a class that extends the `TestServer` class from JsTestAdapter:
 
@@ -1144,7 +1144,7 @@ class Server extends TestServer {
 export = Server;
 ````
 
-## Runner.ts
+## JasmineTestServer/Runner.ts
 
 The test server needs to be able to run the Jasmine runner as a child process. A test run should be scheduled and only run when no further test runs have been scheduled for an amount of time (`batchInterval`). I implement this in `Runner.ts`:
 
@@ -1215,7 +1215,7 @@ class Runner extends events.EventEmitter {
 export = Runner;
 ````
 
-## Start.ts
+## JasmineTestServer/Start.ts
 
 I can now implement the module, that starts the test server:
 
@@ -1371,6 +1371,215 @@ namespace JasmineNodeTestAdapter
         public static string LibDirectory
         {
             get { return Path.GetFullPath(Path.Combine(RootDirectory, "JasmineTestServer")); }
+        }
+    }
+}
+````
+
+All other C# files will be placed in new folder `TestAdapter`.
+
+## TestAdapter/Settings.cs
+
+To access the settings in a `JasmineNodeTestAdapter.json` configuration file I implement class `Settings`:
+
+````csharp
+using JsTestAdapter.Helpers;
+using JsTestAdapter.Logging;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace JasmineNodeTestAdapter.TestAdapter
+{
+    public class Settings
+    {
+        public Settings(string name, string configFile, Func<string, bool> fileExists, string baseDirectory, ITestLogger logger)
+        {
+            Name = name;
+            Logger = logger;
+
+            try
+            {
+                Directory = Path.GetDirectoryName(configFile);
+                SettingsFile = configFile;
+                Json.PopulateFromFile(SettingsFile, this);
+
+                Name = Name ?? name;
+                BatchInterval = BatchInterval ?? 250;
+
+                if (AreValid)
+                {
+                    LogDirectory = GetFullPath(LogDirectory ?? "");
+                    if (LogToFile)
+                    {
+                        logger.AddLogger(LogFilePath);
+                    }
+                }
+                else
+                {
+                    LogDirectory = "";
+                    LogToFile = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                _validator.Validate(false, "Could not read settings: {0}", ex.Message);
+                logger.Error(ex, "Could not read settings");
+            }
+        }
+
+        /// <summary>
+        /// The name of the test container
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// The base path to use to resolve file paths.
+        /// Defaults to the directory in which JasmineNodeTestAdapter.json resides.
+        /// </summary>
+        public string BasePath { get; set; }
+
+        /// <summary>
+        /// Non-source, non-spec helper files. Loaded before any specs.
+        /// Wildcards can be used - <see href="https://www.npmjs.com/package/glob">glob</see>.
+        /// </summary>
+        public IEnumerable<string> Helpers { get; set; }
+
+        /// <summary>
+        /// Files containing Jasmine specs.
+        /// Wildcards can be used - <see href="https://www.npmjs.com/package/glob">glob</see>.
+        /// </summary>
+        public IEnumerable<string> Specs { get; set; }
+
+        /// <summary>
+        /// A test run is triggered if any file specified in `Helpers` or `Specs` change.
+        /// Add any files in `Watch` that should also trigger a test run when they change.
+        /// These will typically be the source files.
+        /// Wildcards can be used - <see href="https://www.npmjs.com/package/glob">glob</see>.
+        /// </summary>
+        public IEnumerable<string> Watch { get; set; }
+
+        /// <summary>
+        /// When the test adapter is watching files for changes, it will wait BatchInterval ms
+        /// before running tests.
+        /// Default value is 250.
+        /// </summary>
+        public int? BatchInterval { get; set; }
+
+        /// <summary>
+        /// Path to a node.js module implementing extensions
+        /// </summary>
+        public string Extensions { get; set; }
+
+        /// <summary>
+        /// True if the test adapter should be disabled for this karma configuration file
+        /// </summary>
+        public bool Disabled { get; set; }
+
+        /// <summary>
+        /// Should logging be done to a file as well as normal logging
+        /// </summary>
+        public bool LogToFile { get; set; }
+
+        /// <summary>
+        /// Where the log file should be saved (if LogToFile is true). If this property is not
+        /// specified the directory in which settings file resides is used.
+        /// </summary>
+        public string LogDirectory { get; set; }
+
+        private readonly Validator _validator = new Validator();
+
+        /// <summary>
+        /// Indicates whether settings have been loaded successfully
+        /// </summary>
+        [JsonIgnore]
+        public bool AreValid { get { return _validator.IsValid; } }
+
+        /// <summary>
+        /// Indicates the reason why the settings are invalid
+        /// </summary>
+        /// [JsonIgnore]
+        public string InvalidReason { get { return _validator.InvalidReason; } }
+
+        /// <summary>
+        /// The path of the adapter settings file
+        /// </summary>
+        [JsonIgnore]
+        public string SettingsFile { get; private set; }
+
+        /// <summary>
+        /// Directory of the settings file
+        /// </summary>
+        [JsonIgnore]
+        public string Directory { get; private set; }
+
+        /// <summary>
+        /// The logger
+        /// </summary>
+        [JsonIgnore]
+        public ITestLogger Logger { get; private set; }
+
+        /// <summary>
+        /// The file to log to when LogToFile == true
+        /// </summary>
+        public string LogFilePath { get { return GetFullPath(LogDirectory, Globals.LogFilename); } }
+
+        private string GetFullPath(params string[] paths)
+        {
+            return GetFullPath(Path.Combine(paths));
+        }
+
+        private string GetFullPath(string path)
+        {
+            return PathUtils.GetFullPath(string.IsNullOrWhiteSpace(path) ? "." : path, Directory);
+        }
+    }
+}
+````
+
+## TestAdapter/JasmineLogger.cs
+
+I need to implement a `TestLogger` class for this adapter:
+
+````csharp
+using JsTestAdapter.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+using Microsoft.VisualStudio.TestWindow.Extensibility;
+using System.IO;
+
+namespace JasmineNodeTestAdapter.TestAdapter
+{
+    public class JasmineLogger : TestLogger
+    {
+        public JasmineLogger(ILogger logger, bool newGlobalLog = false)
+            : this(logger, null, newGlobalLog)
+        {
+        }
+
+        public JasmineLogger(IMessageLogger messageLogger, bool newGlobalLog = false)
+            : this(null, messageLogger, newGlobalLog)
+        {
+        }
+
+        private JasmineLogger(ILogger logger, IMessageLogger messageLogger, bool newGlobalLog)
+        {
+            AddContext("Jasmine");
+            if (Globals.Debug)
+            {
+                if (!Directory.Exists(Globals.GlobalLogDir))
+                {
+                    Directory.CreateDirectory(Globals.GlobalLogDir);
+                }
+                if (newGlobalLog && File.Exists(Globals.GlobalLogFile))
+                {
+                    File.Delete(Globals.GlobalLogFile);
+                }
+                this.Info("Logging to {0}", Globals.GlobalLogFile);
+                this.AddLogger(Globals.GlobalLogFile);
+            }
+            this.AddLogger(logger);
+            this.AddLogger(messageLogger);
         }
     }
 }
