@@ -713,6 +713,8 @@ Finished in 0.009 seconds
 
 ## JasmineInstumentation.ts
 
+For the test adapter to be able to link to spec source code, I need to wrap the Jasmine functions `[xf]describe` and `[xf]it` to add a property `source` to the result. This is done in `JasmineInstumentation.ts`: 
+
 ````JavaScript
 import Specs = require('../TestServer/Specs');
 
@@ -752,6 +754,322 @@ export function wrapFunctions(jasmineEnv: any): void {
     });
 }
 ````
+
+Then I add this to `JasmineRunner.ts`:
+
+````JavaScript
+...
+import JasmineLogger = require('./JasmineLogger');
+import JasmineInstumentation = require('./JasmineInstumentation');
+import Utils = require('./Utils');
+...
+// Create an Jasmine instance
+var jasmine = new Jasmine({ projectBaseDir: settings.BasePath });
+
+// Wrap jasmine functions to get source information
+JasmineInstumentation.wrapFunctions(jasmine.env);
+...
+````
+
+## Timer.ts
+
+I want elapsed time for each spec to be measured in high resolution. So I implement a simple module `Timer.ts`: 
+
+````JavaScript
+var startTime = process.hrtime();
+
+// A high resolution timer
+export function now(): number {
+    var time = process.hrtime(startTime);
+    return time[0] * 1e3 + time[1] / 1e6;
+}
+````
+
+## JasmineReporter.ts
+
+I can not use the default reporter in Jasmine. I need to implement one, that reports results to a test server (not yet implemented).
+
+````JavaScript
+import util = require('util');
+import Specs = require('../TestServer/Specs');
+import TestContext = require('../TestServer/TestContext');
+import TestReporter = require('../TestServer/TestReporter');
+import Logger = require('../TestServer/Logger');
+import Timer = require('./Timer');
+import JasmineLogger = require('./JasmineLogger');
+
+interface SuiteInfo {
+    totalSpecsDefined?: number;
+}
+
+interface Result {
+    root?: boolean;
+    id?: string;
+    isSuite?: boolean;
+    suite?: SuiteResult;
+    source?: any;
+    fullName?: string;
+    description?: string;
+    status?: string;
+    startTime?: number;
+    endTime?: number;
+}
+
+interface SuiteResult extends Result {
+}
+
+interface SpecResult extends Result {
+    failedExpectations?: any[];
+}
+
+function isValidStackFrame(entry: string): boolean {
+    return (entry ? true : false) &&
+        // discard entries related to jasmine:
+        !/[\/\\]jasmine-core[\/\\]/.test(entry) &&
+        // discard entries related to the Jasmine Node test adapter:
+        !/[\/\\]JasmineTestServer[\/\\]/.test(entry);
+}
+
+function pruneStack(stack: string): string[] {
+    return stack
+        .split(/\r\n|\n/)
+        .filter(frame => isValidStackFrame(frame));
+}
+
+function getFailure(failure: any): Specs.Failure {
+    var expectation = <Specs.Failure>{
+        message: failure.message,
+        passed: failure.passed,
+        stack: {}
+    };
+
+    var messageLines = failure.message.split(/\r\n|\n/);
+    var messageLineCount = messageLines.length;
+
+    if (failure.stack) {
+        var stack = pruneStack(failure.stack).slice(messageLines.length);
+        stack.unshift(messageLines[0] || '');
+        expectation.stack = { stack: stack.join('\n') };
+    } else if (failure.stacktrace) {
+        var stack = pruneStack(failure.stacktrace).slice(messageLines.length);
+        stack.unshift(messageLines[0] || '');
+        expectation.stack = { stacktrace: stack.join('\n') };
+    }
+
+    return expectation;
+}
+
+function skipLines(str: string, count: number): string {
+    return str.split(/\r\n|\n/).slice(count).join('\n');
+}
+
+function formatFailure(failure: Specs.Failure): string {
+    var result = failure.message;
+    if (failure.stack && failure.stack.stack) {
+        result += '\n' + skipLines(failure.stack.stack, 1);
+    }
+    if (failure.stack && failure.stack.stacktrace) {
+        result += '\n' + skipLines(failure.stack.stacktrace, 1);
+    }
+    return result;
+}
+
+function isTopLevelSuite(suite) {
+    return suite.description === 'Jasmine_TopLevel_Suite';
+}
+
+class JasmineReporter {
+    constructor(public server: Specs.Server, public basePath: string) {
+    }
+
+    private logger = JasmineLogger('Jasmine Reporter');
+    private testReporter: TestReporter;
+    private context: Specs.Context;
+    private currentSuite: SuiteResult;
+    public isRunning = false;
+
+    private getSuiteList(result: Result): string[] {
+        if (result.root || result.suite.root) {
+            return [];
+        }
+
+        var suites = this.getSuiteList(result.suite);
+        suites.push(result.suite.description);
+        return suites;
+    }
+
+    private originalConsoleFunctions = {
+        log: console.log,
+        debug: console.debug,
+        info: console.info,
+        warn: console.warn,
+        error: console.error
+    };
+
+    private replaceConsole(): void {
+        ['log', 'debug', 'info', 'warn', 'error'].forEach(item => {
+            console[item] = () => this.testReporter.onOutput(this.context, util.format.apply(util, arguments));
+        });
+    }
+
+    private restoreConsole(): void {
+        ['log', 'debug', 'info', 'warn', 'error'].forEach(item => {
+            console[item] = this.originalConsoleFunctions[item];
+        });
+    }
+
+    jasmineStarted(suiteInfo: SuiteInfo) {
+        this.isRunning = true;
+
+        // In this test adapter, there is only one context: Node.js
+        // In the Karma Test Adapter there is a context per browser
+        this.context = {
+            name: 'Node.js'
+        };
+        this.currentSuite = {
+            root: true,
+            isSuite: true
+        };
+        this.testReporter = new TestReporter(this.server, this.basePath, this.logger, fileName => fileName);
+        this.testReporter.onTestRunStart();
+        this.testReporter.onContextStart(this.context);
+        this.replaceConsole();
+    }
+
+    jasmineDone() {
+        this.restoreConsole();
+        this.testReporter.onContextDone(this.context);
+        this.testReporter.onTestRunComplete();
+        this.isRunning = false;
+    }
+
+    jasmineFailed(error: any): void {
+        if (!this.isRunning) {
+            this.jasmineStarted({ totalSpecsDefined: undefined });
+        }
+        this.testReporter.onError(this.context, error);
+        this.jasmineDone();
+    }
+
+    suiteStarted(suite: SuiteResult) {
+        if (!isTopLevelSuite(suite)) {
+            suite.isSuite = true;
+            suite.suite = this.currentSuite;
+            suite.startTime = Timer.now();
+            this.currentSuite = suite;
+            this.testReporter.onSuiteStart(this.context);
+        }
+    }
+
+    suiteDone(suite: SuiteResult) {
+        if (!isTopLevelSuite(suite)) {
+            suite.endTime = Timer.now();
+
+            // In the case of xdescribe, only "suiteDone" is fired.
+            // We need to skip that.
+            if (this.currentSuite === suite) {
+                this.currentSuite = suite.suite;
+            }
+            this.testReporter.onSuiteDone(this.context);
+        }
+    }
+
+    specStarted(spec: SpecResult) {
+        spec.suite = this.currentSuite;
+        spec.startTime = Timer.now();
+
+        this.testReporter.onSpecStart(this.context, {
+            description: spec.description,
+            id: spec.id
+        });
+    }
+
+    specDone(spec: SpecResult) {
+        spec.endTime = Timer.now();
+        var failures = spec.failedExpectations ? spec.failedExpectations.map(exp => getFailure(exp)) : [];
+        this.testReporter.onSpecDone(this.context, {
+            description: spec.description,
+            id: spec.id,
+            log: failures.map(failure => formatFailure(failure)),
+            skipped: spec.status === 'disabled' || spec.status === 'pending',
+            success: spec.failedExpectations.length === 0,
+            suite: this.getSuiteList(spec),
+            time: spec.endTime - spec.startTime,
+            startTime: spec.startTime,
+            endTime: spec.endTime,
+            source: spec.source,
+            failures: failures
+        });
+    }
+}
+
+export = JasmineReporter;
+````
+
+Now I need to get `JasmineRunner.ts` to use the reporter:
+
+````JavaScript
+import path = require('path');
+import glob = require('glob');
+import TestNetServer = require('../TestServer/TestNetServer');
+import JasmineLogger = require('./JasmineLogger');
+import JasmineInstumentation = require('./JasmineInstumentation');
+import JasmineReporter = require('./JasmineReporter');
+import Utils = require('./Utils');
+var Jasmine = require('jasmine');
+
+var logger = JasmineLogger('Jasmine Runner');
+
+var argv = require('yargs')
+    .usage('Usage: node JasmineRunner.js [options]')
+    .demand(['settings', 'port'])
+    .describe('name', 'The name of the test container')
+    .describe('port', 'The test server port')
+    .describe('settings', 'The settings file (JasmineNodeTestAdapter.json)')
+    .argv;
+
+var name = argv.name || '';
+var port = argv.port;
+
+// Load settings
+var settings = Utils.loadSettings(argv.settings);
+
+// Create a TestNetServer, that can report test results to the test server
+var server = new TestNetServer(name, port);
+
+// Create an Jasmine instance
+var jasmine = new Jasmine({ projectBaseDir: settings.BasePath });
+
+// Wrap jasmine functions to get source information
+JasmineInstumentation.wrapFunctions(jasmine.env);
+
+// Add helpers to jasmine
+settings.Helpers.forEach(pattern => {
+    glob.sync(pattern, { nodir: true }).forEach(f => {
+        jasmine.addSpecFile(f);
+    });
+});
+
+// Add specs to jasmine
+settings.Specs.forEach(pattern => {
+    glob.sync(pattern, { nodir: true }).forEach(f => {
+        jasmine.addSpecFile(f);
+    });
+});
+
+var reporter = new JasmineReporter(server, settings.BasePath);
+jasmine.addReporter(reporter);
+
+try {
+    // Run the jasmine specs
+    jasmine.execute();
+} catch (e) {
+    // If there is an unhandled error report it as a failed test
+    reporter.jasmineFailed(e);
+}
+````
+
+Note that running `Start.cmd` in the test project will now fail, because there is no test server.
 
 # Notes (this will disappear when the document is finished)
 
