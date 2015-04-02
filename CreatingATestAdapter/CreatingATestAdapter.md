@@ -465,7 +465,7 @@ To make it easier to configure the adapter by providing intellisense in Visual S
 
 # The Jasmine runner
 
-Now I am ready to implement the test adapter. I will start with the Jasmine runner. As mentioned earlier, this will be a node program, that runs a set of Jasmine tests once, and reports the results to the test server.
+Now I am ready to implement the test adapter. I will start with the Jasmine runner. As mentioned earlier, this will be a node program that runs a set of Jasmine tests once and reports the results to the test server.
 
 The source code for the Jasmine runner and the test server will reside in new folder `JasmineTestServer` in the project.
 
@@ -1079,7 +1079,7 @@ Note that running `Start.cmd` in the test project will now fail, because there i
 
 # The test server
 
-Now that the Jasmine runner has been implemented, I will implement the test server. As mentioned earlier, this will be a node program, that runs in the background running the Jasmine runner when needed, and reporting the results to the test adapter.
+Now that the Jasmine runner has been implemented, I will implement the test server. As mentioned earlier, this will be a node program that runs in the background running the Jasmine runner when needed and reports the results to the test adapter.
 
 I will want the test server to be able to react to file changes, so I will install [gaze](https://www.npmjs.com/package/gaze): 
 
@@ -1286,7 +1286,7 @@ There is not much output here, but that is expected. The server will report resu
 
 # The test adapter
 
-It's time to implement the Test Explorer adapter. As mentioned earlier, it will be implementet in C#, will start a test server for each set of tests, and will respond to events from the test servers by updating the Test Explorer.
+It's time to implement the Test Explorer adapter. As mentioned earlier, it will be implementet in C#, will start a test server for each set of tests and respond to events from the test servers by updating the Test Explorer.
 
 ## Globals.cs
 
