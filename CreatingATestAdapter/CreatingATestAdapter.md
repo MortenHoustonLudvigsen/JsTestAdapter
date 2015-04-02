@@ -22,14 +22,12 @@ Before creating a test adapter using JsTestAdapter the following should be insta
 
 It might also be helpful to install:
 
-* Node module [Grunt CLI](http://gruntjs.com/using-the-cli)
-
+* Node module [Grunt CLI](http://gruntjs.com/using-the-cli)  
   ````bat
   npm install -g grunt-cli
   ```` 
 
-* Node module [tsd](https://www.npmjs.com/package/tsd)
-
+* Node module [tsd](https://www.npmjs.com/package/tsd)  
   ````bat
   npm install -g tsd
   ````

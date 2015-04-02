@@ -9,7 +9,9 @@ To see how to use this library, please see [Creating a Visual Studio Test Explor
 
 # Test adapters implemented using JsTestAdapter:
 
-* [KarmaTestAdapter](https://github.com/MortenHoustonLudvigsen/KarmaTestAdapter) - A Visual Studio test explorer adapter for Karma
+* [Karma Test Adapter](https://github.com/MortenHoustonLudvigsen/KarmaTestAdapter) - A Visual Studio test explorer adapter for Karma
+
+* [Jasmine Node Test Adapter](https://github.com/MortenHoustonLudvigsen/JasmineNodeTestAdapter) - A Visual Studio test explorer adapter for running Jasmine specs in Node.js
 
 *Please add any test adapters built with JsTestAdapter to this list in a pull request* 
 
