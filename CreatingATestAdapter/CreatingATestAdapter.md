@@ -63,6 +63,7 @@ The test adapter will be configured using a JSON file named `JasmineNodeTestAdap
     "Helpers": [ "specs/**/*[Hh]elper.js" ],
     "Specs": [ "specs/**/*[Ss]pec.js" ],
     "Watch": [ "src/**/*.js" ],
+    "BatchInterval": 250,
     "Extensions": "./Extensions",
     "Traits": [ "Jasmine", { "Name": "Foo", "Value": "Bar" } ],
     "Disabled": false,
@@ -85,6 +86,8 @@ These are the possible properties (all properties are optional):
 * `Specs` Files containing Jasmine specs. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).
 
 * `Watch` A test run is triggered if any file specified in `Helpers` or `Specs` change. Add any files in `Watch` that should also trigger a test run when they change. These will typically be the source files. Wildcards can be used - see [glob](https://www.npmjs.com/package/glob).
+
+* `BatchInterval` When the test adapter is watching files for changes, it will wait `BatchInterval` ms before running tests. Default value is 250.
 
 * `Traits` An array of traits to be attached to each test. A trait can be a string or an object containing properties `Name` and `Value`. A trait specified as a string or with only a name will be shown in the Test Explorer as just the string or name.
 
@@ -421,6 +424,10 @@ To make it easier to configure the adapter by providing intellisense in Visual S
             "type": "array",
             "items": { "type": "string" }
         },
+        "BatchInterval": {
+            "description": "When the test adapter is watching files for changes, it will wait `BatchInterval` ms before running tests. Default value is 250.",
+            "type": "number"
+        },
         "Traits": {
             "description": "Traits to attach to each test.",
             "type": "array",
@@ -533,8 +540,9 @@ interface Settings {
     Helpers: string[];
     Specs: string[];
     Watch: string[];
+    BatchInterval: number;
     Traits: (string|Specs.Trait)[];
-    Extensions: string;
+    Extensions?: string;
 }
 
 export = Settings;
@@ -550,12 +558,12 @@ I want default setting values. I implement this in `Constants.ts`:
 import Settings = require('./Settings');
 
 export var defaultSettings = <Settings>{
-    BasePath: process.cwd(),
+    BasePath: undefined,
     Helpers: [],
     Specs: [],
     Watch: [],
-    Traits: [],
-    Extensions: undefined
+    BatchInterval: 250,
+    Traits: []
 }; 
 ````
 
@@ -1138,7 +1146,7 @@ export = Server;
 
 ## Runner.ts
 
-The test server needs to be able to run the Jasmine runner as a child process. I implement this in `Runner.ts`:
+The test server needs to be able to run the Jasmine runner as a child process. A test run should be scheduled and only run when no further test runs have been scheduled for an amount of time (`batchInterval`). I implement this in `Runner.ts`:
 
 ````JavaScript
 import path = require('path');
@@ -1163,43 +1171,41 @@ class Runner extends events.EventEmitter {
     }
 
     private isRunning = false;
-    private isScheduled = false;
     private scheduleTimeout: NodeJS.Timer;
 
     schedule() {
         if (!this.isRunning) {
-            this.run();
+            clearTimeout(this.scheduleTimeout);
+            this.scheduleTimeout = setTimeout(() => this.run(), this.batchInterval);
         } else {
-            this.isScheduled = true;
             clearTimeout(this.scheduleTimeout);
             this.scheduleTimeout = setTimeout(() => this.schedule(), this.batchInterval);
         }
     }
 
     stop() {
-        this.isScheduled = false;
         clearTimeout(this.scheduleTimeout);
     }
 
-    private run() {
+    run() {
+        if (this.isRunning) {
+            this.schedule();
+            return;
+        }
+
         this.isRunning = true;
-        this.isScheduled = false;
         clearTimeout(this.scheduleTimeout);
 
-        var jasmineRunner = child_process.spawn(
-            process.execPath,
-            [
-                path.join(__dirname, 'JasmineRunner.js'),
-                '--name', this.name,
-                '--port', this.server.address.port.toString(),
-                '--settings', this.settingsFile
-            ].map(quoteArg),
-            {
-                stdio: 'inherit'
-            }
-            );
+        var options = { stdio: 'inherit' };
 
-        jasmineRunner.on('exit', code => {
+        var args = [
+            path.join(__dirname, 'JasmineRunner.js'),
+            '--name', this.name,
+            '--port', this.server.address.port.toString(),
+            '--settings', this.settingsFile
+        ].map(quoteArg);
+
+        child_process.spawn(process.execPath, args, options).on('exit', code => {
             this.isRunning = false;
             this.emit('exit', code);
         });
@@ -1208,3 +1214,75 @@ class Runner extends events.EventEmitter {
 
 export = Runner;
 ````
+
+## Start.ts
+
+I can now implement the module, that starts the test server:
+
+````JavaScript
+import Server = require('./Server');
+import Runner = require('./Runner');
+import Utils = require('./Utils');
+
+var argv = require('yargs')
+    .usage('Usage: node Start.js [options]')
+    .demand(['settings'])
+    .describe('name', 'The name of the test container')
+    .describe('settings', 'The settings file (JasmineNodeTestAdapter.json)')
+    .describe('singleRun', 'Run tests only once')
+    .argv;
+
+var name = argv.name || '';
+var settings = Utils.loadSettings(argv.settings);
+
+var server = new Server(name, settings);
+var runner = new Runner(name, argv.settings, settings.BatchInterval, server);
+
+if (argv.singleRun) {
+    runner.on('exit', code => process.exit(code));
+} else {
+    var gaze = require('gaze');
+    gaze(settings.Watch, function (err, watcher) {
+        this.on('all',(event, filepath) => runner.schedule());
+    });
+}
+
+server.once('listening',() => runner.run());
+server.start();
+````
+
+In the test project, I change `Start.cmd` to run `Start.js` instead of `JasmineRunner.js`, and make sure it only runs once:
+
+````bat
+@ECHO OFF
+setlocal
+
+cd %~dp0
+set CurrentDir=%CD%
+cd %~dp0..\..
+set SolutionDir=%CD%
+set TestProjectsDir=%SolutionDir%\TestProjects
+set TestServer=%SolutionDir%\JasmineNodeTestAdapter\JasmineTestServer\Start.js
+
+:: Set NODE_PATH to simulate starting node from %CurrentDir%
+set NODE_PATH=%CurrentDir%\node_modules
+set NODE_PATH=%NODE_PATH%;%TestProjectsDir%\node_modules
+set NODE_PATH=%NODE_PATH%;%SolutionDir%\node_modules;%AppData%\Roaming\npm\node_modules
+
+:: Add the default path to the global node_modules:
+set NODE_PATH=%NODE_PATH%;%AppData%\Roaming\npm\node_modules
+
+:: Run jasmine specs using JasmineRunner.js
+node "%TestServer%" --settings "%CurrentDir%\JasmineNodeTestAdapter.json" --singleRun
+````
+
+When i run `Start.cmd`, I get the following result:
+
+````
+INFO [Jasmine Server]: Started - port: 55755
+INFO [Jasmine Server]: Test run start
+INFO [Jasmine Server]: Test run complete
+````
+
+There is not much output here, but that is expected. The server will report results to the test adapter if and when it is connected.
+
