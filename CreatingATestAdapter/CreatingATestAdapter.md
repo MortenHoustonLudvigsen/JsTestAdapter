@@ -670,7 +670,7 @@ To the `TypescriptTests` project, I add a `JasmineNodeTestAdapter.json` file:
 
 I also add a batch script `Start.cmd`:
 
-````Batchfile
+````bat
 @ECHO OFF
 setlocal
 
