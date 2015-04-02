@@ -1286,7 +1286,7 @@ There is not much output here, but that is expected. The server will report resu
 
 # The test adapter
 
-It's time to implement the Test Explorer adapter. As mentioned earlier, it will be implementet in C#, will start a test server for each set of tests and respond to events from the test servers by updating the Test Explorer.
+It's time to implement the Test Explorer adapter, implemented in C#. As mentioned earlier, it will start a test server for each set of tests and respond to events from the test servers by updating the Test Explorer.
 
 ## Globals.cs
 
