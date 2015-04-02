@@ -4,8 +4,6 @@ title: Creating a Visual Studio Test Explorer adapter with JS Test Adapter
 permalink: /CreatingATestAdapter/
 ---
 
-***This document is under construction!***
-
 To demonstrate how this library is used I will implement a test adapter for [Jasmine](http://jasmine.github.io/) tests run in [Node.js](https://nodejs.org/).
 
 The test adapter will be found on GitHub: [JasmineNodeTestAdapter](https://github.com/MortenHoustonLudvigsen/JasmineNodeTestAdapter).
@@ -1955,3 +1953,62 @@ namespace JasmineNodeTestAdapter.TestAdapter
     }
 }
 ````
+
+# That's it!
+
+I now have a Visual Studio Test Explorer Adapter for Jasmine specs run in Node.js. While trying it out, I discovered, that the [extend](https://www.npmjs.com/package/extend) module needs to be a full dependency in `package.json`, not a developement dependency. I also want this to be version 1.0.0. So I change `package.json` accordingly:
+
+````json
+{
+  "name": "JasmineNodeTestAdapter",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "flatten-packages": "^0.1.4",
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-compress": "^0.13.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-exec": "^0.4.6",
+    "grunt-nuget": "^0.1.4",
+    "grunt-xmlpoke": "^0.8.0",
+    "regedit": "^2.1.0",
+    "semver": "^4.3.1",
+    "string-template": "^0.2.0",
+    "xmlbuilder": "^2.6.2",
+    "zpad": "^0.5.0"
+  },
+  "dependencies": {
+    "error-stack-parser": "^1.1.2",
+    "extend": "^2.0.0",
+    "gaze": "^0.5.1",
+    "glob": "^5.0.3",
+    "iconv-lite": "^0.4.7",
+    "log4js": "^0.6.22",
+    "q": "^1.2.0",
+    "source-map": "^0.4.0",
+    "source-map-resolve": "^0.3.1",
+    "stackframe": "^0.2.2",
+    "yargs": "^3.5.4"
+  }
+}
+````
+
+To be sure that all node modules have been install I open a command prompt and run:
+
+````bat
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
+npm install
+````
+
+I now rebuild the solution, and ensure that the `CreatePackage` task has been run. Now I run the `RunVS` task, to see if the test adapter works.
+
+With this version of the test adapter, the Test Explorer looks like this:
+
+![](TestExplorerAtTheEnd.png)
+
+If I click on the failed test, the details are displayed:
+
+![](TestExplorerFailedTest.png)
+
+It looks like the adapter works as expected!
