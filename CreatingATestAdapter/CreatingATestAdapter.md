@@ -26,13 +26,13 @@ It might also be helpful to install:
 
 * Node module [Grunt CLI](http://gruntjs.com/using-the-cli)
 
-  ````
+  ````bat
   npm install -g grunt-cli
   ```` 
 
 * Node module [tsd](https://www.npmjs.com/package/tsd)
 
-  ````
+  ````bat
   npm install -g tsd
   ````
 
