@@ -1071,6 +1071,67 @@ try {
 
 Note that running `Start.cmd` in the test project will now fail, because there is no test server.
 
-# Notes (this will disappear when the document is finished)
+# The test server
 
+Now that the Jasmine runner has been implemented, I will implement the test server. As mentioned earlier, this will be a node program, that runs in the background running the Jasmine runner when needed, and reporting the results to the test adapter.
+
+I will want the test server to be able to react to file changes, so I will install [gaze](https://www.npmjs.com/package/gaze): 
+
+````bat
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 npm install gaze --save
+````
+
+## Server.ts
+
+I need to implement a class that extends the `TestServer` class from JsTestAdapter:
+
+````JavaScript
+import path = require('path');
+import TestServer = require('../TestServer/TestServer');
+import JsonConnection = require('../TestServer/JsonConnection');
+import Specs = require('../TestServer/Specs');
+import JasmineLogger = require('./JasmineLogger');
+import Settings = require('./Settings');
+
+
+class Server extends TestServer {
+    constructor(name: string, settings: Settings) {
+        super(name);
+
+        if (settings.Traits) {
+            var traits = settings.Traits.map(trait => typeof trait === 'string' ? { name: trait } : trait);
+            this.loadExtensions({ getTraits: (spec, server) => traits });
+        }
+
+        if (settings.Extensions) {
+            try {
+                this.loadExtensions(path.resolve(settings.Extensions));
+            } catch (e) {
+                this.logger.error('Failed to load extensions from ' + settings.Extensions + ': ' + e.message);
+            }
+        }
+
+        this.once('listening',() => this.logger.info('Started - port:', this.address.port));
+        this.start();
+    }
+
+    logger = JasmineLogger('Jasmine Server');
+
+    onError(error: any, connection: JsonConnection) {
+        this.logger.error(error);
+    }
+
+    testRunStarted(): void {
+        this.logger.info('Test run start');
+        super.testRunStarted();
+    }
+
+    testRunCompleted(specs: Specs.Spec[]): void {
+        this.logger.info('Test run complete');
+        super.testRunCompleted(specs);
+    }
+}
+
+export = Server;
+````
