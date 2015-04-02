@@ -521,9 +521,195 @@ function JasmineLogger(category: string): Logger {
 export = JasmineLogger;
 ````
 
+## Settings.ts
+
+I will need to read settings from `JasmineNodeTestAdapter.json` configuration files. Therefore i make an interface in `Settings.ts`:
+
+````JavaScript
+import Specs = require('../TestServer/Specs');
+
+interface Settings {
+    BasePath: string;
+    Helpers: string[];
+    Specs: string[];
+    Watch: string[];
+    Traits: (string|Specs.Trait)[];
+    Extensions: string;
+}
+
+export = Settings;
+````
+
+Note that I import `../TestServer/Specs`, which contains a number of central interfaces defined in JsTestAdapter. Note also that I only define the properties I expect to need in the Jasmine runner and the test server.
+
+## Constants.ts
+
+I want default setting values. I implement this in `Constants.ts`:
+
+````JavaScript
+import Settings = require('./Settings');
+
+export var defaultSettings = <Settings>{
+    BasePath: process.cwd(),
+    Helpers: [],
+    Specs: [],
+    Watch: [],
+    Traits: [],
+    Extensions: undefined
+}; 
+````
+
+## Utils.ts
+
+It is not enough to define an interface for settings. I also need to be able to read them from a file. I implement this in `Utils.ts`:
+
+````JavaScript
+import path = require('path');
+import extend = require('extend');
+import Settings = require('./Settings');
+import Constants = require('./Constants');
+import TextFile = require('../TestServer/TextFile');
+
+export function loadSettings(settingsFile: string): Settings {
+    var settings = <Settings>extend(Constants.defaultSettings, TextFile.readJson(settingsFile));
+
+    // Use the directory of the settings file if settings.BasePath is not specified
+    settings.BasePath = settings.BasePath || path.dirname(settingsFile);
+
+    // Resolve paths to full paths
+    settings.Helpers = settings.Helpers.map(pattern => path.resolve(settings.BasePath, pattern));
+    settings.Specs = settings.Specs.map(pattern => path.resolve(settings.BasePath, pattern));
+    settings.Watch = settings.Watch.map(pattern => path.resolve(settings.BasePath, pattern));
+
+    // Watch helpers and specs as well
+    settings.Watch = settings.Watch.concat(settings.Helpers).concat(settings.Specs);
+
+    return settings;
+}
+````
+
+Note that I read the settings file using the `TextFile` module from JsTestAdapter. This makes it possible to read files encoded in one of the following encodings:
+
+* UTF-8
+* UTF-8 with BOM / Signature
+* UTF-16 Big-Endian with BOM / Signature
+* UTF-16 Little-Endian with BOM / Signature
+
 ## JasmineRunner.ts
 
 Next, I will implement the Jasmine runner itself.
+
+First, I need to install [glob](https://www.npmjs.com/package/glob) so I can interpret the paths supplied in the settings file:
+
+````
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
+npm install glob --save
+````
+
+I also want the TypeScript definitions for [glob](https://www.npmjs.com/package/glob) (which depends on the definitions for [minimatch](https://www.npmjs.com/package/minimatch)):
+
+````
+cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
+tsd query glob --action install --save
+tsd query minimatch --action install --save
+````
+
+This adds files to the `typings` folder, which I include in the project.
+
+Now I can implement `JasmineRunnet.ts` (I will add a reporter to this later):
+
+````JavaScript
+import path = require('path');
+import glob = require('glob');
+import JasmineLogger = require('./JasmineLogger');
+import Utils = require('./Utils');
+var Jasmine = require('jasmine');
+
+var argv = require('yargs')
+    .usage('Usage: $0 --settings [settings file]')
+    .demand(['settings'])
+    .argv;
+
+var logger = JasmineLogger('Jasmine Runner');
+
+// Load settings
+var settings = Utils.loadSettings(argv.settings);
+
+// Create an Jasmine instance
+var jasmine = new Jasmine({ projectBaseDir: settings.BasePath });
+
+// Add helpers to jasmine
+settings.Helpers.forEach(pattern => {
+    glob.sync(pattern, { nodir: true }).forEach(f => {
+        jasmine.addSpecFile(f);
+    });
+});
+
+// Add specs to jasmine
+settings.Specs.forEach(pattern => {
+    glob.sync(pattern, { nodir: true }).forEach(f => {
+        jasmine.addSpecFile(f);
+    });
+});
+
+// Run the jasmine specs
+jasmine.execute();
+````
+
+I should now be able to run the specs in my test project. To do this I open the `TestProjects.sln` solution.
+
+To the `TypescriptTests` project, I add a `JasmineNodeTestAdapter.json` file:
+
+````JSON
+{
+    "$schema": "http://MortenHoustonLudvigsen.github.io/JasmineNodeTestAdapter/JasmineNodeTestAdapter.schema.json",
+    "Specs": [ "specs/**/*[Ss]pec.js" ],
+    "Watch": [ "src/**/*.js" ]
+}
+````
+
+I also add a batch script `Start.cmd`:
+
+````Batchfile
+@ECHO OFF
+setlocal
+
+cd %~dp0
+set CurrentDir=%CD%
+cd %~dp0..\..
+set SolutionDir=%CD%
+set TestProjectsDir=%SolutionDir%\TestProjects
+set JasmineRunner=%SolutionDir%\JasmineNodeTestAdapter\JasmineTestServer\JasmineRunner.js
+
+:: Set NODE_PATH to simulate starting node from %CurrentDir%
+set NODE_PATH=%CurrentDir%\node_modules
+set NODE_PATH=%NODE_PATH%;%TestProjectsDir%\node_modules
+set NODE_PATH=%NODE_PATH%;%SolutionDir%\node_modules;%AppData%\Roaming\npm\node_modules
+
+:: Add the default path to the global node_modules:
+set NODE_PATH=%NODE_PATH%;%AppData%\Roaming\npm\node_modules
+
+:: Run jasmine specs using JasmineRunner.js
+node "%JasmineRunner%" --settings "%CurrentDir%\JasmineNodeTestAdapter.json"
+````
+
+Now I can open a command prompt, and run `Start.cmd` with the following result:
+
+````
+Started
+..F
+
+Failures:
+1) Adder add (3, 7) should return 9
+  Message:
+    Expected 10 to equal 9.
+  Stack:
+    Error: Expected 10 to equal 9.
+        at Object.<anonymous> (C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests\specs\AdderSpec.js:14:80)
+
+3 specs, 1 failure
+Finished in 0.009 seconds
+````
 
 # Notes (this will disappear when the document is finished)
 
