@@ -307,14 +307,14 @@ I add a `package.json` file to track node modules (I make sure that it is saved 
 
 I need to install Jasmine, so I jump to a command prompt and run:
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests 
 npm install jasmine --save-dev
 ```` 
 
 I also need the TypeScript definitions for Jasmine:
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\TestProjects\TypescriptTests 
 tsd query jasmine --action install --save
 ```` 
@@ -481,14 +481,14 @@ Objects implementing this interface will be needed in both the Jasmine runner an
   
 A [log4js](https://www.npmjs.com/package/log4js) logger implements the `Logger` interface, so I will install it from a command prompt:
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 npm install log4js --save
 ````
 
 I also want the TypeScript definitions for [log4js](https://www.npmjs.com/package/log4js) (which depend on definitions for [express](https://www.npmjs.com/package/express)):
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 tsd query log4js --action install --save
 tsd query express --action install --save
@@ -601,14 +601,14 @@ Next, I will implement the Jasmine runner itself.
 
 First, I need to install [glob](https://www.npmjs.com/package/glob) so I can interpret the paths supplied in the settings file:
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 npm install glob --save
 ````
 
 I also want the TypeScript definitions for [glob](https://www.npmjs.com/package/glob) (which depends on the definitions for [minimatch](https://www.npmjs.com/package/minimatch)):
 
-````
+````bat
 cd C:\Git\JasmineNodeTestAdapter\JasmineNodeTestAdapter
 tsd query glob --action install --save
 tsd query minimatch --action install --save
@@ -713,11 +713,4 @@ Finished in 0.009 seconds
 
 # Notes (this will disappear when the document is finished)
 
-npm install glob --save
-
 npm install gaze --save
-
-tsd query glob --action install --save
-
-tsd query minimatch --action install --save
-
