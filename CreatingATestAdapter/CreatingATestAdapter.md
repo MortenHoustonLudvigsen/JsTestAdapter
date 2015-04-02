@@ -1585,6 +1585,59 @@ namespace JasmineNodeTestAdapter.TestAdapter
 }
 ````
 
+## TestAdapter/JasmineServerTestLogger.cs
+
+````csharp
+using JsTestAdapter.Logging;
+using System.Text.RegularExpressions;
+
+namespace JasmineNodeTestAdapter.TestAdapter
+{
+    public class JasmineServerTestLogger : TestServerLogger
+    {
+        public JasmineServerTestLogger(ITestLogger logger)
+            : base(logger)
+        {
+        }
+
+        private static Regex messageRe = new Regex(@"^(INFO|WARN|ERROR|DEBUG)\s*(.*)$");
+        public override void Log(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+            var match = messageRe.Match(message);
+            if (match.Success)
+            {
+                switch (match.Groups[1].Value)
+                {
+                    case "INFO":
+                        this.Debug(message);
+                        break;
+                    case "WARN":
+                        this.Warn(message);
+                        break;
+                    case "ERROR":
+                        this.Error(message);
+                        break;
+                    case "DEBUG":
+                        this.Debug(message);
+                        break;
+                    default:
+                        this.Debug(message);
+                        break;
+                }
+            }
+            else
+            {
+                this.Debug(message);
+            }
+        }
+    }
+}
+````
+
 ## TestAdapter/JasmineServer.cs
 
 ````csharp
@@ -1630,6 +1683,84 @@ namespace JasmineNodeTestAdapter.TestAdapter
         {
             options.Add("--name", Settings.Name);
             options.Add("--settings", PathUtils.GetRelativePath(WorkingDirectory, Settings.SettingsFile));
+        }
+    }
+}
+````
+
+## TestAdapter/JasmineTestSettings.cs
+
+````csharp
+using JsTestAdapter.TestAdapter;
+using System.Xml.Serialization;
+
+namespace JasmineNodeTestAdapter.TestAdapter
+{
+    [XmlType(JasmineTestSettings.SettingsName)]
+    public class JasmineTestSettings : TestSettings
+    {
+        public const string SettingsName = "JasmineTestSettings";
+
+        public JasmineTestSettings()
+            : base(SettingsName)
+        {
+        }
+    }
+}
+````
+
+## TestAdapter/JasmineTestAdapterInfo.cs
+
+````csharp
+using JsTestAdapter.Helpers;
+using JsTestAdapter.Logging;
+using JsTestAdapter.TestAdapter;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+using Microsoft.VisualStudio.TestWindow.Extensibility;
+using System;
+
+namespace JasmineNodeTestAdapter.TestAdapter
+{
+    public class JasmineTestAdapterInfo : TestAdapterInfo
+    {
+        public override string Name
+        {
+            get { return "Jasmine"; }
+        }
+
+        public override Uri ExecutorUri
+        {
+            get { return Globals.ExecutorUri; }
+        }
+
+        public override bool IsTestContainer(string file)
+        {
+            return PathUtils.PathHasFileName(file, Globals.SettingsFilename);
+        }
+
+        public override int GetContainerPriority(string file)
+        {
+            return 0;
+        }
+
+        public override string SettingsName
+        {
+            get { return JasmineTestSettings.SettingsName; }
+        }
+
+        public override string SettingsFileDirectory
+        {
+            get { return Globals.GlobalLogDir; }
+        }
+
+        public override ITestLogger CreateLogger(IMessageLogger logger)
+        {
+            return new JasmineLogger(logger);
+        }
+
+        public override ITestLogger CreateLogger(ILogger logger)
+        {
+            return new JasmineLogger(logger);
         }
     }
 }
