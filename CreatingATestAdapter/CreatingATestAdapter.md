@@ -1272,7 +1272,7 @@ set NODE_PATH=%NODE_PATH%;%SolutionDir%\node_modules;%AppData%\Roaming\npm\node_
 :: Add the default path to the global node_modules:
 set NODE_PATH=%NODE_PATH%;%AppData%\Roaming\npm\node_modules
 
-:: Run jasmine specs using JasmineRunner.js
+:: Run jasmine specs using Start.js
 node "%TestServer%" --settings "%CurrentDir%\JasmineNodeTestAdapter.json" --singleRun
 ````
 
