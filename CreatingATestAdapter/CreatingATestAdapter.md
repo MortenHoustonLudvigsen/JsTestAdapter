@@ -41,13 +41,13 @@ It might also be helpful to install:
 The test adapter will be made up of three components:
 
 * The Jasmine runner  
-  This will be a node program that runs a set of Jasmine tests once, and reports the results to the test server. 
+  This will be a node program that runs a set of Jasmine tests once and reports the results to the test server. 
 
 * The test server  
   This will be a node program that runs in the background running the Jasmine runner when needed and reports the results to the test adapter.
 
 * The test adapter  
-  This will be the Test Explorer adapter, implemented in C#, that will start a test server for each set of tests, and will respond to events from the test servers by updating the Test Explorer.
+  This will be the Test Explorer adapter, implemented in C#, that will start a test server for each set of tests and respond to events from the test servers by updating the Test Explorer.
 
 ## Configuration
 
