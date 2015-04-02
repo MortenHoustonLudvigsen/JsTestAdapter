@@ -1793,7 +1793,7 @@ namespace JasmineNodeTestAdapter.TestAdapter
 
 ## TestAdapter/JasmineNodeTestAdapter.cs
 
-````cs
+````csharp
 using JsTestAdapter.Helpers;
 using JsTestAdapter.TestAdapter;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -1955,4 +1955,3 @@ namespace JasmineNodeTestAdapter.TestAdapter
     }
 }
 ````
-
