@@ -240,7 +240,7 @@ Notice, that I don't change the `Version` attribute of the `Identity` element. T
 
 I will be creating a node program to run Jasmine tests in a new directory: `JasmineTestServer`, and I will be creating a solution with test projects under a new directory `TestProjects` in the main solution directory. Therefore I change `Gruntfile.js` accordingly:
 
-````TypeScript
+````JavaScript
 var jsTestAdapter = require('./Grunt/Index');
 
 module.exports = function (grunt) {
@@ -323,7 +323,7 @@ I include the generated files in the test project (not `node_modules`).
 
 To have something to test, I add a TypeScript file `Adder.ts` in new folder `src`:
 
-````TypeScript
+````JavaScript
 export function add(a: number, b: number): number {
     return a + b;
 }
@@ -331,7 +331,7 @@ export function add(a: number, b: number): number {
 
 I want a handful of Jasmine tests, so I create TypeScript file `AdderSpec.ts` in new folder `specs`:
 
-````TypeScript
+````JavaScript
 import Adder = require('../src/Adder');
 
 describe('Adder',() => {
@@ -376,7 +376,7 @@ However, for this to work properly, the project needs to be built, and then the 
 
 The reason for this is that the debug session starts *before* the `CreatePackage` task is finished running. Otherwise the `ResetVS` task could be a part of the `CreatePackage` task. As far as I can tell this has been fixed in Visual Studio 2015 CTP, where the debugger waits for the Task Runner Explorer to finish before starting. In this case one could create a task `AfterBuild` in `Gruntfile.js`, and bind that to the `After Build` event in the Task Runner Explorer, instead of `CreatePackage`:
 
-````TypeScript
+````JavaScript
 grunt.registerTask('AfterBuild', [
     'CreatePackage',
     'ResetVS'
@@ -468,7 +468,7 @@ The source code for the Jasmine runner and the test server will reside in new fo
 
 JsTestAdapter defines an interface `Logger` (in `TestServer/Logger.ts`):
 
-````TypeScript
+````JavaScript
 interface Logger {
     info(message: string, ...args: any[]): void;
     warn(message: string, ...args: any[]): void;
@@ -498,7 +498,7 @@ This adds files to the `typings` folder, which I include in the project.
 
 Now I can implement a function, that returns a `Logger` object given a category. I create `JasmineLogger.ts` (in the `JasmineTestServer` folder):
 
-````TypeScript
+````JavaScript
 import log4js = require('log4js');
 import Logger = require('../TestServer/Logger');
 
@@ -525,7 +525,7 @@ export = JasmineLogger;
 
 I will need to read settings from `JasmineNodeTestAdapter.json` configuration files. Therefore i make an interface in `Settings.ts`:
 
-````TypeScript
+````JavaScript
 import Specs = require('../TestServer/Specs');
 
 interface Settings {
@@ -546,7 +546,7 @@ Note that I import `../TestServer/Specs`, which contains a number of central int
 
 I want default setting values. I implement this in `Constants.ts`:
 
-````TypeScript
+````JavaScript
 import Settings = require('./Settings');
 
 export var defaultSettings = <Settings>{
@@ -563,7 +563,7 @@ export var defaultSettings = <Settings>{
 
 It is not enough to define an interface for settings. I also need to be able to read them from a file. I implement this in `Utils.ts`:
 
-````TypeScript
+````JavaScript
 import path = require('path');
 import extend = require('extend');
 import Settings = require('./Settings');
@@ -618,7 +618,7 @@ This adds files to the `typings` folder, which I include in the project.
 
 Now I can implement `JasmineRunnet.ts` (I will add a reporter to this later):
 
-````TypeScript
+````JavaScript
 import path = require('path');
 import glob = require('glob');
 import JasmineLogger = require('./JasmineLogger');
@@ -713,7 +713,7 @@ Finished in 0.009 seconds
 
 ## JasmineInstumentation.ts
 
-````TypeScript
+````JavaScript
 import Specs = require('../TestServer/Specs');
 
 interface WrappedFunction extends Function {
