@@ -45,6 +45,9 @@ namespace JsTestAdapter.TestAdapter
                 ProjectListener.FileRenamed += (source, e) => OnProjectFileRenamed(e.Project, e.OldFile, e.NewFile);
                 ProjectListener.StartListening();
 
+                RunScheduler = new Scheduler(250, RunTestsInternal);
+                RefreshTestContainersScheduler = new Scheduler<string>(250, RefreshTestContainersInternal);
+
                 Logger.Debug("TestContainerDiscoverer created");
             }
             catch (Exception ex)
@@ -71,6 +74,8 @@ namespace JsTestAdapter.TestAdapter
         public TestSettingsProvider TestSettingsProvider { get; private set; }
         public TestSettings TestSettings { get { return TestSettingsProvider.Settings; } }
         public string BaseDirectory { get { return ServiceProvider.GetSolutionDirectory(); } }
+        public Scheduler RunScheduler { get; private set; }
+        public Scheduler<string> RefreshTestContainersScheduler { get; private set; }
 
         private void RunTestsInternal()
         {
@@ -80,25 +85,41 @@ namespace JsTestAdapter.TestAdapter
             }
         }
 
-        private bool _shouldRun = false;
-        private object _runLock = new object();
         public void RunTests()
         {
-            lock (_runLock)
+            RunScheduler.Schedule();
+        }
+
+        private void RefreshTestContainersInternal(IEnumerable<string> reasons)
+        {
+            if (!_initialContainerSearch)
             {
-                _shouldRun = true;
-            }
-            TPL.Task.Delay(500).ContinueWith(t =>
-            {
-                lock (_runLock)
+                var reason = reasons.FirstOrDefault();
+                if (string.IsNullOrWhiteSpace(reason))
                 {
-                    if (_shouldRun)
-                    {
-                        _shouldRun = false;
-                        RunTestsInternal();
-                    }
+                    Logger.Debug("Refreshing containers");
                 }
-            });
+                else
+                {
+                    Logger.Debug("Refreshing containers: {0}", reason);
+                }
+
+                Containers.CreateContainers(FindMissingSources());
+                OnTestContainersChanged();
+            }
+        }
+
+        public void RefreshTestContainers(string reasonFmt, params object[] args)
+        {
+            RefreshTestContainers(string.Format(reasonFmt, args));
+        }
+
+        public void RefreshTestContainers(string reason = null)
+        {
+            if (!_initialContainerSearch)
+            {
+                RefreshTestContainersScheduler.Schedule(reason);
+            }
         }
 
         public IEnumerable<ITestContainer> TestContainers
@@ -129,6 +150,7 @@ namespace JsTestAdapter.TestAdapter
             Logger.Debug("Solution loaded");
             _initialContainerSearch = true;
             Containers.Clear();
+            RefreshTestContainers("Solution loaded");
         }
 
         private void OnSolutionUnloaded(object sender, EventArgs e)
@@ -136,6 +158,7 @@ namespace JsTestAdapter.TestAdapter
             Logger.Debug("Solution unloaded");
             _initialContainerSearch = true;
             Containers.Clear();
+            RefreshTestContainers("Solution unloaded");
         }
 
         private void OnSolutionProjectChanged(object sender, SolutionListenerEventArgs e)
@@ -188,41 +211,6 @@ namespace JsTestAdapter.TestAdapter
             OnProjectFileAdded(project, newFile);
         }
 
-        private bool _shouldRefresh = false;
-        private object _refreshLock = new object();
-        public void RefreshTestContainers(string reason = null)
-        {
-            if (!_initialContainerSearch)
-            {
-                lock (_refreshLock)
-                {
-                    if (!_shouldRefresh)
-                    {
-                        _shouldRefresh = true;
-                        if (!string.IsNullOrWhiteSpace(reason))
-                        {
-                            Logger.Debug("Refreshing containers: {0}", reason);
-                        }
-                    }
-                }
-                TPL.Task.Delay(500).ContinueWith(t =>
-                {
-                    if (_shouldRefresh)
-                    {
-                        Containers.CreateContainers(FindMissingSources());
-                    }
-                    lock (_refreshLock)
-                    {
-                        if (_shouldRefresh)
-                        {
-                            _shouldRefresh = false;
-                            OnTestContainersChanged();
-                        }
-                    }
-                });
-            }
-        }
-
         public IEnumerable<TestContainerSource> FindMissingSources()
         {
             return FindSources()
@@ -271,6 +259,12 @@ namespace JsTestAdapter.TestAdapter
 
             if (disposing)
             {
+                if (RunScheduler != null)
+                {
+                    RunScheduler.Dispose();
+                    RunScheduler = null;
+                }
+
                 if (Containers != null)
                 {
                     Containers.Dispose();

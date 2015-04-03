@@ -46,7 +46,6 @@ namespace JsTestAdapter.TestAdapter
                 SourceSettingsPersister.Save(Discoverer.TestAdapterInfo.SettingsFileDirectory, SourceSettings);
                 StartTestServer();
             }
-            RefreshContainer("TestContainer created");
             if (!IsValid)
             {
                 Logger.Warn(InvalidReason);
@@ -75,6 +74,7 @@ namespace JsTestAdapter.TestAdapter
         public string BaseDirectory { get; private set; }
         public IEnumerable<FileWatcher> FileWatchers { get; private set; }
         public IEnumerable<Guid> Tests { get; private set; }
+        public virtual bool AutoRun { get { return true; } }
 
         private readonly Validator _validator = new Validator();
         public bool IsValid { get { return _validator.IsValid; } }
@@ -142,11 +142,20 @@ namespace JsTestAdapter.TestAdapter
             Logger.Debug("File {0}: {1}", e.ChangedReason, GetRelativePath(e.File));
             switch (e.ChangedReason)
             {
+                case FileChangedReason.Added:
+                    Validate(false, "{0} has been added", GetRelativePath(e.File));
+                    Discoverer.RefreshTestContainers("{0}/{1}", Name, InvalidReason);
+                    Dispose();
+                    break;
                 case FileChangedReason.Changed:
-                    Containers.CreateContainer(Discoverer.CreateTestContainerSource(Project, Source));
+                    Validate(false, "{0} has changed", GetRelativePath(e.File));
+                    Discoverer.RefreshTestContainers("{0}/{1}", Name, InvalidReason);
+                    Dispose();
                     break;
                 case FileChangedReason.Removed:
-                    Containers.Remove(this);
+                    Validate(false, "{0} has been removed", GetRelativePath(e.File));
+                    Discoverer.RefreshTestContainers("{0}/{1}", Name, InvalidReason);
+                    Dispose();
                     break;
             }
         }
@@ -207,7 +216,7 @@ namespace JsTestAdapter.TestAdapter
                 {
                     Validate(false, "Could not start {0} after {1} attempts", Discoverer.TestAdapterInfo.Name, TestServer.Attempts);
                     Logger.Error(InvalidReason);
-                    RefreshContainer("");
+                    RefreshContainer(InvalidReason);
                 }
             }
             else
@@ -240,7 +249,10 @@ namespace JsTestAdapter.TestAdapter
                     {
                         _refreshing = false;
                         Tests = evt.Tests.ToList();
-                        Discoverer.RunTests();
+                        if (AutoRun)
+                        {
+                            Discoverer.RunTests();
+                        }
                     }
                     break;
             }
@@ -281,10 +293,11 @@ namespace JsTestAdapter.TestAdapter
             if (_disposed) return;
             _disposed = true;
 
+            Validate(false, "Disposing");
+
             if (disposing)
             {
                 Logger.Debug("Disposing of TestContainer");
-                StopTestServer("Disposing", false);
 
                 if (FileWatchers != null)
                 {
@@ -296,11 +309,12 @@ namespace JsTestAdapter.TestAdapter
                     FileWatchers = null;
                 }
 
+                StopTestServer("Disposing", false);
+
                 SourceSettingsPersister.DeleteSettingsFile(Discoverer.TestAdapterInfo.SettingsFileDirectory, SourceSettings);
                 Containers.Remove(this);
+                Logger.Debug("TestContainer disposed");
             }
-
-            Validate(false, "Disposing");
         }
 
         #endregion

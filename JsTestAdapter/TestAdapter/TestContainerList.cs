@@ -29,7 +29,6 @@ namespace JsTestAdapter.TestAdapter
                     _containers.Add(Discoverer.CreateTestContainer(source));
                 }
                 RemoveDuplicates();
-                Discoverer.RefreshTestContainers();
             }
             catch (Exception ex)
             {
@@ -93,7 +92,6 @@ namespace JsTestAdapter.TestAdapter
             if (_containers.Remove(container))
             {
                 container.Dispose();
-                Discoverer.RefreshTestContainers();
             }
         }
 
@@ -102,7 +100,6 @@ namespace JsTestAdapter.TestAdapter
             var containersToDispose = GetContainers();
             _containers.Clear();
             containersToDispose.ForEach(c => c.Dispose());
-            Discoverer.RefreshTestContainers();
         }
 
         private List<TestContainer> GetContainers()

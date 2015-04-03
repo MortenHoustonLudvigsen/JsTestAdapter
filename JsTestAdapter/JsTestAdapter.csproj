@@ -131,6 +131,7 @@
     <Compile Include="Helpers\FileWatcher.cs" />
     <Compile Include="Helpers\PathUtils.cs" />
     <Compile Include="Helpers\ProjectListener.cs" />
+    <Compile Include="Helpers\Scheduler.cs" />
     <Compile Include="Helpers\Sha1Utils.cs" />
     <Compile Include="Helpers\SolutionListener.cs" />
     <Compile Include="Helpers\TaskCompletionSourceExtensions.cs" />
