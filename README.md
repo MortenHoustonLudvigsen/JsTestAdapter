@@ -4,7 +4,7 @@ A base library to create Visual Studio test explorer adapters for javascript.
 
 To see how to use this library, please see [Creating a Visual Studio Test Explorer adapter with JS Test Adapter](CreatingATestAdapter/).
 
-# Test adapters implemented using JsTestAdapter:
+## Test adapters implemented using JsTestAdapter:
 
 * [Karma Test Adapter](https://github.com/MortenHoustonLudvigsen/KarmaTestAdapter) - A Visual Studio test explorer adapter for Karma
 
