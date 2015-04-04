@@ -2,7 +2,7 @@
 
 A base library to create Visual Studio test explorer adapters for javascript.
 
-To see how to use this library, please see [Creating a Visual Studio Test Explorer adapter with JS Test Adapter](CreatingATestAdapter/).
+To see how to use this library, please see [Creating a Visual Studio Test Explorer adapter with JS Test Adapter](http://mortenhoustonludvigsen.github.io/JsTestAdapter/CreatingATestAdapter/).
 
 ## Test adapters implemented using JsTestAdapter:
 
