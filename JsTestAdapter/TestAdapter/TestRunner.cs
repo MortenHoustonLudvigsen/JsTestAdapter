@@ -219,11 +219,11 @@ namespace JsTestAdapter.TestAdapter
             {
                 var failure = result.Failures.First();
                 testResult.ErrorMessage = failure.message;
-                testResult.ErrorStackTrace = string.Join(Environment.NewLine, failure.stack);
+                testResult.ErrorStackTrace = string.Join(Environment.NewLine, failure.stack ?? new List<string>());
                 foreach (var extraFailure in result.Failures.Skip(1))
                 {
                     testResult.Messages.Add(new TestResultMessage(TestResultMessage.AdditionalInfoCategory,
-                        string.Join(Environment.NewLine, extraFailure.message, string.Join(Environment.NewLine, extraFailure.stack))
+                        string.Join(Environment.NewLine, extraFailure.message, string.Join(Environment.NewLine, extraFailure.stack ?? new List<string>()))
                     ));
                 }
                 if (result.Log != null && result.Log.Any())
