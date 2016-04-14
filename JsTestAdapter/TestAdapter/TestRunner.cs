@@ -223,7 +223,7 @@ namespace JsTestAdapter.TestAdapter
                 foreach (var extraFailure in result.Failures.Skip(1))
                 {
                     testResult.Messages.Add(new TestResultMessage(TestResultMessage.AdditionalInfoCategory,
-                        string.Join(Environment.NewLine, extraFailure.message, string.Join(Environment.NewLine, extraFailure.stack ?? new List<string>())
+                        string.Join(Environment.NewLine, extraFailure.message, string.Join(Environment.NewLine, extraFailure.stack ?? new List<string>()))
                     ));
                 }
                 if (result.Log != null && result.Log.Any())
